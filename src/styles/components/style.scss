@@ -1,0 +1,111 @@
+@use '../styles/constants/colors' as colors;
+@use './toast' as toast;
+
+.toast-container {
+  position: fixed;
+  top: toast.$toast-container-top;
+  right: toast.$toast-container-right;
+  display: flex;
+  flex-direction: column;
+  z-index: toast.$toast-container-z-index;
+  will-change: transform, height;
+}
+
+.toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: toast.$toast-gap;
+  margin-bottom: toast.$toast-margin-bottom;
+  padding: toast.$toast-padding;
+  background-color: white;
+  filter: drop-shadow(toast.$toast-box-shadow);
+  border: toast.$toast-border-width solid colors.$border-color;
+  min-width: toast.$toast-min-width;
+  max-width: toast.$toast-max-width;
+  transition:
+    margin-bottom toast.$toast-enter-duration toast.$toast-enter-easing 0s,
+    opacity toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay,
+    transform toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay;
+
+  // 진입 애니메이션
+  &.toast--enter {
+    margin: 0;
+    opacity: 0;
+    transform: toast.$toast-enter-transform;
+  }
+
+  // 퇴장 애니메이션
+  &.toast--exit {
+    opacity: 0;
+    transform: toast.$toast-exit-transform;
+    transition:
+      opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      transform toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // 타입별 왼쪽 아이콘 배경 색상
+  &--success .toast__icon-wrapper {
+    background-color: toast.$toast-success-bg;
+    color: colors.$success-color;
+  }
+
+  &--error .toast__icon-wrapper {
+    background-color: toast.$toast-error-bg;
+    color: colors.$error-color;
+  }
+
+  &--warning .toast__icon-wrapper {
+    background-color: toast.$toast-warning-bg;
+    color: colors.$warning-color;
+  }
+
+  &--info .toast__icon-wrapper {
+    background-color: toast.$toast-info-bg;
+    color: colors.$primary-color;
+  }
+
+  // 아이콘 배경 원형 스타일
+  &__icon-wrapper {
+    width: toast.$toast-icon-size;
+    height: toast.$toast-icon-size;
+    border-radius: toast.$toast-icon-border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: toast.$toast-icon-font-size;
+  }
+
+  // 메시지 텍스트 블록
+  &__message {
+    display: flex;
+    flex-direction: column;
+    gap: toast.$toast-message-gap;
+
+    .toast__title {
+      font-weight: toast.$toast-title-font-weight;
+    }
+
+    .toast__count{
+      font-size: toast.$toast-count-font-size;
+      font-weight: toast.$toast-count-font-weight;
+      color: colors.pick(gray, 9);
+    }
+  }
+
+  // 닫기 버튼
+  &__close {
+    position: absolute;
+    top: toast.$toast-close-top;
+    right: toast.$toast-close-right;
+    background: none;
+    border: none;
+    color: colors.$font-secondary-color;
+    cursor: pointer;
+
+    &:hover {
+      color: colors.$font-color;
+    }
+  }
+}
