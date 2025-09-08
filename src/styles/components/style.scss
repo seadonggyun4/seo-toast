@@ -1,14 +1,48 @@
-@use '../styles/constants/colors' as colors;
-@use './toast' as toast;
+@use '../constants/colors' as colors;
+@use '../constants/toast' as toast;
 
 .toast-container {
   position: fixed;
-  top: toast.$toast-container-top;
-  right: toast.$toast-container-right;
   display: flex;
   flex-direction: column;
   z-index: toast.$toast-container-z-index;
   will-change: transform, height;
+
+  // 위치별 스타일
+  &--top-right {
+    top: toast.$toast-container-top;
+    right: toast.$toast-container-right;
+  }
+
+  &--top-left {
+    top: toast.$toast-container-top;
+    left: toast.$toast-container-right;
+  }
+
+  &--top-center {
+    top: toast.$toast-container-top;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--bottom-right {
+    bottom: toast.$toast-container-top;
+    right: toast.$toast-container-right;
+    flex-direction: column-reverse;
+  }
+
+  &--bottom-left {
+    bottom: toast.$toast-container-top;
+    left: toast.$toast-container-right;
+    flex-direction: column-reverse;
+  }
+
+  &--bottom-center {
+    bottom: toast.$toast-container-top;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column-reverse;
+  }
 }
 
 .toast {
@@ -23,25 +57,86 @@
   border: toast.$toast-border-width solid colors.$border-color;
   min-width: toast.$toast-min-width;
   max-width: toast.$toast-max-width;
+  border-radius: toast.$toast-border-radius;
+
+  // 기본 transition
   transition:
     margin-bottom toast.$toast-enter-duration toast.$toast-enter-easing 0s,
     opacity toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay,
     transform toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay;
 
-  // 진입 애니메이션
-  &.toast--enter {
+  // === 진입 애니메이션 ===
+  
+  // Slide 애니메이션 (기본)
+  &.toast--enter-slide {
     margin: 0;
     opacity: 0;
     transform: toast.$toast-enter-transform;
   }
 
-  // 퇴장 애니메이션
-  &.toast--exit {
+  // Fade 애니메이션
+  &.toast--enter-fade {
+    margin: 0;
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  // Scale 애니메이션
+  &.toast--enter-scale {
+    margin: 0;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  // Bounce 애니메이션
+  &.toast--enter-bounce {
+    margin: 0;
+    opacity: 0;
+    transform: scale(0.3);
+    transition:
+      margin-bottom toast.$toast-enter-duration toast.$toast-enter-easing 0s,
+      opacity toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay,
+      transform toast.$toast-enter-duration cubic-bezier(0.68, -0.55, 0.265, 1.55) toast.$toast-enter-delay;
+  }
+
+  // === 퇴장 애니메이션 ===
+  
+  // Slide 애니메이션 (기본)
+  &.toast--exit-slide {
     opacity: 0;
     transform: toast.$toast-exit-transform;
     transition:
       opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
       transform toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // Fade 애니메이션
+  &.toast--exit-fade {
+    opacity: 0;
+    transform: scale(1);
+    transition:
+      opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // Scale 애니메이션
+  &.toast--exit-scale {
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+      opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      transform toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // Bounce 애니메이션
+  &.toast--exit-bounce {
+    opacity: 0;
+    transform: scale(0.3);
+    transition:
+      opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      transform toast.$toast-exit-duration cubic-bezier(0.6, -0.28, 0.735, 0.045) 0s,
       margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
   }
 
@@ -75,6 +170,19 @@
     align-items: center;
     justify-content: center;
     font-size: toast.$toast-icon-font-size;
+    flex-shrink: 0;
+
+    svg {
+      width: toast.$toast-icon-svg-size;
+      height: toast.$toast-icon-svg-size;
+    }
+
+    img {
+      width: toast.$toast-icon-svg-size;
+      height: toast.$toast-icon-svg-size;
+      object-fit: cover;
+      border-radius: 50%;
+    }
   }
 
   // 메시지 텍스트 블록
@@ -82,15 +190,31 @@
     display: flex;
     flex-direction: column;
     gap: toast.$toast-message-gap;
+    flex: 1;
+    min-width: 0; // flexbox 오버플로우 방지
 
     .toast__title {
       font-weight: toast.$toast-title-font-weight;
+      font-size: toast.$toast-title-font-size;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .toast__count{
+    .toast__desc {
+      font-size: toast.$toast-desc-font-size;
+      line-height: toast.$toast-desc-line-height;
+      word-break: break-word;
+    }
+
+    .toast__count {
       font-size: toast.$toast-count-font-size;
       font-weight: toast.$toast-count-font-weight;
-      color: colors.pick(gray, 9);
+      color: colors.pick(gray, 6);
+      background-color: colors.pick(gray, 1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      white-space: nowrap;
     }
   }
 
@@ -103,9 +227,53 @@
     border: none;
     color: colors.$font-secondary-color;
     cursor: pointer;
+    width: toast.$toast-close-size;
+    height: toast.$toast-close-size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    padding: 0;
+
+    svg {
+      width: toast.$toast-close-icon-size;
+      height: toast.$toast-close-icon-size;
+    }
 
     &:hover {
       color: colors.$font-color;
+      background-color: colors.pick(gray, 1);
     }
+
+    &:focus {
+      outline: 2px solid colors.$primary-color;
+      outline-offset: 1px;
+    }
+  }
+}
+
+// 반응형 대응
+@media (max-width: 768px) {
+  .toast-container {
+    &--top-right,
+    &--top-left,
+    &--bottom-right,
+    &--bottom-left {
+      left: 1rem;
+      right: 1rem;
+      transform: none;
+    }
+
+    &--top-center,
+    &--bottom-center {
+      left: 1rem;
+      right: 1rem;
+      transform: none;
+    }
+  }
+
+  .toast {
+    min-width: auto;
+    max-width: none;
   }
 }
