@@ -175,7 +175,7 @@ export class SeoToast extends HTMLElement {
       if (existingToast) {
         const counterEl = existingToast.querySelector('.toast__count');
         if (counterEl) {
-          counterEl.textContent = `${cached.count}회 발생`;
+          counterEl.textContent = `${cached.count} occurrences`;
         }
       }
       return;
@@ -207,12 +207,12 @@ export class SeoToast extends HTMLElement {
       </div>
       <div class="toast__message" role="alert">
         <div class="toast__title">
-          알림
+          Notice
           <span class="toast__count"></span>
         </div>
         <div class="toast__desc">${this.escapeHtml(message)}</div>
       </div>
-      <button class="toast__close" type="button" aria-label="닫기">
+      <button class="toast__close" type="button" aria-label="close">
         ${this.closeIcon}
       </button>
     `;

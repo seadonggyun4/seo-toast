@@ -1,7 +1,7 @@
 // Toast 컴포넌트 스타일 상수
 
 // 컨테이너 관련
-$toast-container-top: 6rem !default;
+$toast-container-top: 1rem !default;
 $toast-container-right: 1rem !default;
 $toast-container-z-index: 200000 !default;
 
@@ -11,11 +11,11 @@ $toast-margin-bottom: 1rem !default;
 $toast-padding: 1rem 3rem 1rem 1rem !default;
 $toast-border-width: 1px !default;
 $toast-border-radius: 0.5rem !default;
-$toast-min-width: 30rem !default;
-$toast-max-width: 40rem !default;
+$toast-min-width: 20rem !default;
+$toast-max-width: 20rem !default;
 
 // 그림자 관련
-$toast-box-shadow: 0 4px 4px rgba(0,0,0,.12) !default;
+$toast-box-shadow: 0 2px 2px rgba(0,0,0,.1) !default;
 
 // 애니메이션 관련
 $toast-enter-duration: 0.3s !default;
@@ -30,10 +30,10 @@ $toast-exit-transform: translateY(10%) !default;
 $toast-exit-margin-duration: 0.3s !default;
 
 // 아이콘 래퍼 관련
-$toast-icon-size: 3rem !default;
+$toast-icon-size: 2rem !default;
 $toast-icon-border-radius: 50% !default;
-$toast-icon-font-size: 2rem !default;
-$toast-icon-svg-size: 1.5rem !default;
+$toast-icon-font-size: 1.2rem !default;
+$toast-icon-svg-size: 1.2rem !default;
 
 // 타입별 배경색 (CSS 변수로 오버라이드 가능)
 $toast-success-bg: #dcfce7 !default;
@@ -44,10 +44,10 @@ $toast-info-bg: #dbeafe !default;
 // 메시지 관련
 $toast-message-gap: 0.5rem !default;
 $toast-title-font-weight: bold !default;
-$toast-title-font-size: 1.4rem !default;
-$toast-desc-font-size: 1.3rem !default;
+$toast-title-font-size: 0.9rem !default;
+$toast-desc-font-size: 0.9rem !default;
 $toast-desc-line-height: 1.4 !default;
-$toast-count-font-size: 1.1rem !default;
+$toast-count-font-size: 0.9rem !default;
 $toast-count-font-weight: 500 !default;
 
 // 닫기 버튼 관련

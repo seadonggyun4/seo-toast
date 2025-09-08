@@ -244,11 +244,6 @@
       color: colors.$font-color;
       background-color: colors.pick(gray, 1);
     }
-
-    &:focus {
-      outline: 2px solid colors.$primary-color;
-      outline-offset: 1px;
-    }
   }
 }
 
