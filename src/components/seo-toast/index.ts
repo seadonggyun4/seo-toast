@@ -1,11 +1,14 @@
 export interface ToastOptions {
   closeTime?: number;
   customIcon?: string; // 이미지 URL 또는 SVG 문자열
+  title?: string; // 제목 설정 (옵셔널)
+  showTitle?: boolean; // 제목 표시 여부 (기본값: true)
+  showProgress?: boolean; // 프로그레스 바 표시 여부 (기본값: true)
 }
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
-export type AnimationType = 'slide' | 'fade' | 'scale' | 'bounce';
+export type AnimationType = 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
 
 export interface ToastConfig {
   position?: ToastPosition;
@@ -17,6 +20,7 @@ interface ToastEventDetail {
   message: string;
   type: ToastType;
   count: number;
+  title?: string;
 }
 
 export class SeoToast extends HTMLElement {
@@ -28,6 +32,14 @@ export class SeoToast extends HTMLElement {
   private _position: ToastPosition = 'top-right';
   private _enterAnimation: AnimationType = 'slide';
   private _exitAnimation: AnimationType = 'slide';
+
+  // 기본 제목 매핑
+  private readonly defaultTitles = {
+    success: 'Success',
+    error: 'Error',
+    warning: 'Warning',
+    info: 'Information'
+  };
 
   // 기본 SVG 아이콘들
   private readonly defaultIcons = {
@@ -154,6 +166,10 @@ export class SeoToast extends HTMLElement {
     return this.defaultIcons[type] || this.defaultIcons.info;
   }
 
+  private getTitle(type: ToastType, customTitle?: string): string {
+    return customTitle || this.defaultTitles[type];
+  }
+
   public showToast(
     message: string,
     type: ToastType = 'info',
@@ -161,7 +177,7 @@ export class SeoToast extends HTMLElement {
   ): void {
     if (!message.trim()) return;
 
-    const key = `${type}:${message}`;
+    const key = `${type}:${message}:${options?.title || ''}`;
     const now = Date.now();
     const cached = this.messageCache.get(key);
     const closeTime = options?.closeTime ?? this._closeTime;
@@ -175,7 +191,7 @@ export class SeoToast extends HTMLElement {
       if (existingToast) {
         const counterEl = existingToast.querySelector('.toast__count');
         if (counterEl) {
-          counterEl.textContent = `${cached.count} occurrences`;
+          counterEl.textContent = `(${cached.count})`;
         }
       }
       return;
@@ -200,21 +216,35 @@ export class SeoToast extends HTMLElement {
     toast.className = `toast toast--${type} ${enterClass}`;
 
     const icon = this.getIcon(type, options?.customIcon);
+    const showTitle = options?.showTitle !== false; // 기본값 true
+    const showProgress = options?.showProgress !== false; // 기본값 true
+    const title = this.getTitle(type, options?.title);
+
+    const titleHtml = showTitle ? `
+      <div class="toast__title">
+        ${this.escapeHtml(title)}
+        <span class="toast__count"></span>
+      </div>
+    ` : '';
+
+    const progressHtml = showProgress ? `
+      <div class="toast__progress">
+        <div class="toast__progress-bar toast__progress-bar--${type}"></div>
+      </div>
+    ` : '';
 
     toast.innerHTML = `
       <div class="toast__icon-wrapper">
         ${icon}
       </div>
       <div class="toast__message" role="alert">
-        <div class="toast__title">
-          Notice
-          <span class="toast__count"></span>
-        </div>
+        ${titleHtml}
         <div class="toast__desc">${this.escapeHtml(message)}</div>
       </div>
       <button class="toast__close" type="button" aria-label="close">
         ${this.closeIcon}
       </button>
+      ${progressHtml}
     `;
 
     // 위치에 따라 삽입 위치 결정
@@ -232,7 +262,7 @@ export class SeoToast extends HTMLElement {
     });
 
     // 이벤트 리스너 및 자동 닫기 설정
-    this.setupToastInteractions(toast, key, message, type, closeTime);
+    this.setupToastInteractions(toast, key, message, type, closeTime, options?.title, showProgress);
   }
 
   private setupToastInteractions(
@@ -240,9 +270,20 @@ export class SeoToast extends HTMLElement {
     key: string,
     message: string,
     type: ToastType,
-    closeTime: number
+    closeTime: number,
+    title?: string,
+    showProgress: boolean = true
   ): void {
+    let timeoutId: number;
+    let isPaused = false;
+    let remainingTime = closeTime;
+    let startTime = Date.now();
+
+    const progressBar = toast.querySelector('.toast__progress-bar') as HTMLElement;
+
     const closeToast = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      
       const exitClass = this.getAnimationClass('exit', this._exitAnimation);
       toast.classList.add(exitClass);
       
@@ -250,7 +291,7 @@ export class SeoToast extends HTMLElement {
         'transitionend',
         () => {
           toast.remove();
-          this.dispatchCloseEvent(message, type, key);
+          this.dispatchCloseEvent(message, type, key, title);
           this.messageCache.delete(key);
           this.toastMap.delete(key);
         },
@@ -258,17 +299,57 @@ export class SeoToast extends HTMLElement {
       );
     };
 
+    const startProgress = () => {
+      if (showProgress && progressBar) {
+        startTime = Date.now();
+        progressBar.style.animationDuration = `${remainingTime}ms`;
+        progressBar.style.animationPlayState = 'running';
+      }
+    };
+
+    const pauseProgress = () => {
+      if (showProgress && progressBar && !isPaused) {
+        isPaused = true;
+        const elapsed = Date.now() - startTime;
+        remainingTime = Math.max(0, remainingTime - elapsed);
+        progressBar.style.animationPlayState = 'paused';
+        clearTimeout(timeoutId);
+      }
+    };
+
+    const resumeProgress = () => {
+      if (showProgress && progressBar && isPaused) {
+        isPaused = false;
+        startProgress();
+        timeoutId = window.setTimeout(closeToast, remainingTime);
+      }
+    };
+
+    // 프로그래스 바 시작 (진입 애니메이션 완료 후)
+    if (showProgress && progressBar) {
+      setTimeout(() => {
+        startProgress();
+      }, 100); // 진입 애니메이션이 어느 정도 진행된 후 시작
+    }
+
+    // 마우스 호버 시 일시정지
+    toast.addEventListener('mouseenter', pauseProgress);
+    toast.addEventListener('mouseleave', resumeProgress);
+
+    // 닫기 버튼
     const closeButton = toast.querySelector('.toast__close');
     closeButton?.addEventListener('click', closeToast);
 
-    setTimeout(closeToast, closeTime);
+    // 자동 닫기 타이머
+    timeoutId = window.setTimeout(closeToast, closeTime);
   }
 
-  private dispatchCloseEvent(message: string, type: ToastType, key: string): void {
+  private dispatchCloseEvent(message: string, type: ToastType, key: string, title?: string): void {
     const detail: ToastEventDetail = {
       message,
       type,
       count: this.messageCache.get(key)?.count ?? 1,
+      ...(title !== undefined && { title })
     };
 
     this.dispatchEvent(

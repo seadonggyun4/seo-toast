@@ -230,6 +230,11 @@ html {
     @media (max-width: 768px) {
       font-size: 2.5rem;
     }
+
+    span{
+      margin-left: 0.5rem;
+      -webkit-text-fill-color: black;
+    }
   }
 
   &__subtitle {

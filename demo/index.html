@@ -38,7 +38,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero__content">
-        <h2 class="hero__title">Universal Toast Component</h2>
+        <h2 class="hero__title">Universal Toast Component<span>🍞</span></h2>
         <p class="hero__subtitle">
           Framework-agnostic web component that works everywhere.<br>
           TypeScript support, customizable animations, and zero dependencies.
@@ -168,7 +168,8 @@ SeoToast.info('New update available');</code></pre>
           <div class="usage-card__content">
             <pre><code class="language-javascript">// Configure toast position
 SeoToast.getInstance({ 
-  position: 'top-right' // top-left, top-center, bottom-right, etc.
+  // top-left, top-center, bottom-right, etc.
+  position: 'top-right' 
 });
 
 SeoToast.success('Positioned toast!');</code></pre>

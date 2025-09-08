@@ -48,7 +48,7 @@
 .toast {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: toast.$toast-gap;
   margin-bottom: toast.$toast-margin-bottom;
   padding: toast.$toast-padding;
@@ -58,6 +58,7 @@
   min-width: toast.$toast-min-width;
   max-width: toast.$toast-max-width;
   border-radius: toast.$toast-border-radius;
+  overflow: hidden; // 프로그레스 바가 border-radius를 넘지 않도록
 
   // 기본 transition
   transition:
@@ -99,6 +100,19 @@
       transform toast.$toast-enter-duration cubic-bezier(0.68, -0.55, 0.265, 1.55) toast.$toast-enter-delay;
   }
 
+  // Flip 애니메이션
+  &.toast--enter-flip {
+    margin: 0;
+    opacity: 0;
+    transform: rotateY(90deg);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition:
+      margin-bottom toast.$toast-enter-duration toast.$toast-enter-easing 0s,
+      opacity toast.$toast-enter-duration toast.$toast-enter-easing toast.$toast-enter-delay,
+      transform toast.$toast-enter-duration ease-out toast.$toast-enter-delay;
+  }
+
   // === 퇴장 애니메이션 ===
   
   // Slide 애니메이션 (기본)
@@ -138,6 +152,28 @@
       opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
       transform toast.$toast-exit-duration cubic-bezier(0.6, -0.28, 0.735, 0.045) 0s,
       margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // Flip 애니메이션
+  &.toast--exit-flip {
+    opacity: 0;
+    transform: rotateY(-90deg);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition:
+      opacity toast.$toast-exit-duration toast.$toast-exit-easing 0s,
+      transform toast.$toast-exit-duration ease-in 0s,
+      margin-bottom toast.$toast-exit-margin-duration toast.$toast-exit-easing toast.$toast-exit-delay;
+  }
+
+  // 토스트 메인 컨텐츠 영역 (아이콘 + 메시지 + 닫기 버튼)
+  &__content {
+    display: flex;
+    align-items: flex-start;
+    gap: toast.$toast-gap;
+    padding: toast.$toast-padding;
+    position: relative;
+    flex: 1;
   }
 
   // 타입별 왼쪽 아이콘 배경 색상
@@ -192,6 +228,7 @@
     gap: toast.$toast-message-gap;
     flex: 1;
     min-width: 0; // flexbox 오버플로우 방지
+    padding-right: 2rem; // 닫기 버튼 공간 확보
 
     .toast__title {
       font-weight: toast.$toast-title-font-weight;
@@ -199,12 +236,14 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      margin: 0;
     }
 
     .toast__desc {
       font-size: toast.$toast-desc-font-size;
       line-height: toast.$toast-desc-line-height;
       word-break: break-word;
+      margin: 0;
     }
 
     .toast__count {
@@ -218,7 +257,7 @@
     }
   }
 
-  // 닫기 버튼
+  // 닫기 버튼 - content 내부에 absolute 위치
   &__close {
     position: absolute;
     top: toast.$toast-close-top;
@@ -234,6 +273,7 @@
     justify-content: center;
     border-radius: 0.25rem;
     padding: 0;
+    z-index: 1;
 
     svg {
       width: toast.$toast-close-icon-size;
@@ -242,33 +282,59 @@
 
     &:hover {
       color: colors.$font-color;
-      background-color: colors.pick(gray, 1);
+    }
+
+    &:focus {
+      outline: 2px solid colors.$primary-color;
+      outline-offset: 2px;
+    }
+  }
+
+  // 프로그래스 바 - 토스트 하단에 고정
+  &__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: toast.$toast-progress-height;
+    background-color: transparent;
+    overflow: hidden;
+
+    &-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      transform-origin: left center;
+      animation: toast-progress linear forwards;
+
+      // 타입별 프로그래스 바 색상
+      &--success {
+        background-color: colors.$success-color;
+      }
+
+      &--error {
+        background-color: colors.$error-color;
+      }
+
+      &--warning {
+        background-color: colors.$warning-color;
+      }
+
+      &--info {
+        background-color: colors.$primary-color;
+      }
     }
   }
 }
 
-// 반응형 대응
-@media (max-width: 768px) {
-  .toast-container {
-    &--top-right,
-    &--top-left,
-    &--bottom-right,
-    &--bottom-left {
-      left: 1rem;
-      right: 1rem;
-      transform: none;
-    }
-
-    &--top-center,
-    &--bottom-center {
-      left: 1rem;
-      right: 1rem;
-      transform: none;
-    }
+// 프로그래스 바 애니메이션
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
   }
-
-  .toast {
-    min-width: auto;
-    max-width: none;
+  to {
+    transform: scaleX(0);
   }
 }

@@ -8,11 +8,14 @@ $toast-container-z-index: 200000 !default;
 // 토스트 기본 스타일
 $toast-gap: 1rem !default;
 $toast-margin-bottom: 1rem !default;
-$toast-padding: 1rem 3rem 1rem 1rem !default;
+$toast-padding: 0.5rem 0.5rem 1rem 0.5rem !default;
 $toast-border-width: 1px !default;
 $toast-border-radius: 0.5rem !default;
 $toast-min-width: 20rem !default;
 $toast-max-width: 20rem !default;
+
+// 프로그래스 바 관련
+$toast-progress-height: 3px !default;
 
 // 그림자 관련
 $toast-box-shadow: 0 2px 2px rgba(0,0,0,.1) !default;
