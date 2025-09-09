@@ -1,1 +1,1 @@
-import './components/seo-toast/index'
+import './seo-toast/index'
