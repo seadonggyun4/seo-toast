@@ -1,345 +1,744 @@
-import { SeoToast } from '../src/components/seo-toast';
+import { SeoToast } from '../src//main';
 
-// Initialize toast instance
-const toast = SeoToast.getInstance({
-  position: 'top-right',
-  enterAnimation: 'slide',
-  exitAnimation: 'slide'
-});
+// Types
+type ToastType = 'success' | 'error' | 'warning' | 'info';
+type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+type AnimationType = 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
 
-// Demo button handlers
-class DemoHandlers {
-  constructor() {
-    this.setupBasicDemo();
-    this.setupPositionDemo();
-    this.setupAnimationDemo();
-    this.setupAdvancedDemo();
-  }
-
-  private setupBasicDemo(): void {
-    // Quick demo buttons in hero section
-    document.getElementById('demo-success')?.addEventListener('click', () => {
-      SeoToast.success('Success! Operation completed successfully.');
-    });
-
-    document.getElementById('demo-error')?.addEventListener('click', () => {
-      SeoToast.error('Error! Something went wrong. Please try again.');
-    });
-
-    document.getElementById('demo-warning')?.addEventListener('click', () => {
-      SeoToast.warning('Warning! Please check your input before proceeding.');
-    });
-
-    document.getElementById('demo-info')?.addEventListener('click', () => {
-      SeoToast.info('Info: New update is available for download.');
-    });
-
-    // Basic usage demo
-    document.getElementById('demo-basic')?.addEventListener('click', () => {
-      const messages = [
-        { type: 'success' as const, text: 'Data saved successfully!' },
-        { type: 'error' as const, text: 'Network connection failed' },
-        { type: 'warning' as const, text: 'Session will expire in 5 minutes' },
-        { type: 'info' as const, text: 'New features have been added' }
-      ];
-
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-      SeoToast[randomMessage.type](randomMessage.text);
-    });
-  }
-
-  private setupPositionDemo(): void {
-    document.getElementById('demo-position-top')?.addEventListener('click', () => {
-      SeoToast.getInstance({ position: 'top-center' });
-      SeoToast.info('Toast positioned at top center');
-    });
-
-    document.getElementById('demo-position-bottom')?.addEventListener('click', () => {
-      SeoToast.getInstance({ position: 'bottom-center' });
-      SeoToast.success('Toast positioned at bottom center');
-    });
-  }
-
-  private setupAnimationDemo(): void {
-    document.getElementById('demo-slide')?.addEventListener('click', () => {
-      SeoToast.getInstance({
-        enterAnimation: 'slide',
-        exitAnimation: 'slide'
-      });
-      SeoToast.info('Slide animation demo');
-    });
-
-    document.getElementById('demo-fade')?.addEventListener('click', () => {
-      SeoToast.getInstance({
-        enterAnimation: 'fade',
-        exitAnimation: 'fade'
-      });
-      SeoToast.warning('Fade animation demo');
-    });
-
-    document.getElementById('demo-scale')?.addEventListener('click', () => {
-      SeoToast.getInstance({
-        enterAnimation: 'scale',
-        exitAnimation: 'scale'
-      });
-      SeoToast.success('Scale animation demo');
-    });
-
-    document.getElementById('demo-bounce')?.addEventListener('click', () => {
-      SeoToast.getInstance({
-        enterAnimation: 'bounce',
-        exitAnimation: 'bounce'
-      });
-      SeoToast.error('Bounce animation demo');
-    });
-  }
-
-  private setupAdvancedDemo(): void {
-    // Custom icon demo
-    document.getElementById('demo-custom-icon')?.addEventListener('click', () => {
-      const customSvg = `<svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/>
-      </svg>`;
-      
-      SeoToast.success('⭐ Custom star icon!', {
-        customIcon: customSvg,
-        closeTime: 3000
-      });
-    });
-
-    // Advanced configuration demo
-    document.getElementById('demo-advanced')?.addEventListener('click', () => {
-      // Add event listener for this demo
-      const handleToastClose = (event: any) => {
-        console.log('Toast closed:', event.detail);
-        SeoToast.info(`Previous toast was closed after ${event.detail.count} occurrence(s)`);
-        // Remove listener after first use
-        toast.removeEventListener('toast-close', handleToastClose);
-      };
-
-      toast.addEventListener('toast-close', handleToastClose);
-
-      SeoToast.warning('This toast has custom timing and event handling', {
-        closeTime: 5000
-      });
-    });
-
-    // Duplicate prevention demo
-    document.getElementById('demo-duplicate')?.addEventListener('click', () => {
-      // Call the same message multiple times quickly
-      SeoToast.info('This is a duplicate message test');
-      
-      setTimeout(() => {
-        SeoToast.info('This is a duplicate message test');
-      }, 500);
-      
-      setTimeout(() => {
-        SeoToast.info('This is a duplicate message test');
-      }, 1000);
-    });
-  }
+interface ToastOptions {
+  title?: string;
+  customIcon?: string;
+  closeTime?: number;
+  showTitle?: boolean;
+  showProgress?: boolean;
 }
 
-// Framework integration examples (for display purposes)
-class FrameworkExamples {
-  static getReactExample(): string {
-    return `import { SeoToast } from 'seo-toast';
-import 'seo-toast/dist/style.css';
+interface ToastConfig {
+  position?: ToastPosition;
+  enterAnimation?: AnimationType;
+  exitAnimation?: AnimationType;
+}
 
-function MyComponent() {
-  const handleSubmit = async () => {
-    try {
-      await submitForm();
-      SeoToast.success('Form submitted successfully!');
-    } catch (error) {
-      SeoToast.error('Submission failed. Please try again.');
-    }
+// Demo configuration state
+interface DemoConfig {
+  type: ToastType;
+  position: ToastPosition;
+  enterAnimation: AnimationType;
+  exitAnimation: AnimationType;
+  closeTime: number;
+  showTitle: boolean;
+  showProgress: boolean;
+  customTitle: string;
+  customIcon: string | null;
+}
+
+// Statistics tracking
+interface ToastStats {
+  total: number;
+  success: number;
+  error: number;
+  warning: number;
+  info: number;
+}
+
+// Global demo state
+let currentConfig: DemoConfig = {
+  type: 'success',
+  position: 'top-right',
+  enterAnimation: 'slide',
+  exitAnimation: 'slide',
+  closeTime: 2000,
+  showTitle: true,
+  showProgress: true,
+  customTitle: '',
+  customIcon: null
+};
+
+let toastStats: ToastStats = {
+  total: 0,
+  success: 0,
+  error: 0,
+  warning: 0,
+  info: 0
+};
+
+// Copy code examples
+const copyCodeExamples: Record<string, string> = {
+  install: 'npm install seo-toast',
+  
+  'basic-usage': `import { SeoToast } from 'seo-toast';
+
+// Show different types of toasts
+SeoToast.success('Operation completed successfully!');
+SeoToast.error('Something went wrong!');
+SeoToast.warning('Please check your input');
+SeoToast.info('New feature available');`,
+
+  position: `import { SeoToast } from 'seo-toast';
+
+// Configure toast position
+SeoToast.getInstance({ 
+  position: 'top-center' // top-left, top-center, top-right
+                        // bottom-left, bottom-center, bottom-right
+});
+
+SeoToast.success('Positioned toast!');`,
+
+  animations: `import { SeoToast } from 'seo-toast';
+
+// Different animation types
+SeoToast.getInstance({
+  enterAnimation: 'bounce', // slide, fade, scale, bounce, flip
+  exitAnimation: 'fade'
+});
+
+SeoToast.info('Animated toast!');`,
+
+  'custom-options': `import { SeoToast } from 'seo-toast';
+
+// Custom configuration
+SeoToast.success('Data saved!', {
+  title: 'Success',
+  closeTime: 5000,
+  showProgress: true,
+  showTitle: true
+});`,
+
+  'custom-icons': `import { SeoToast } from 'seo-toast';
+
+// Using custom image
+SeoToast.success('Profile updated!', {
+  customIcon: '/profile-icon.png'
+});
+
+// Using custom SVG
+const customSvg = \`<svg viewBox="0 0 24 24" fill="currentColor">
+  <path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/>
+</svg>\`;
+
+SeoToast.info('Custom star icon!', { 
+  customIcon: customSvg 
+});`,
+
+  events: `import { SeoToast } from 'seo-toast';
+
+// Listen for toast close events
+document.addEventListener('toast-close', (event) => {
+  const { message, type, count } = event.detail;
+  console.log(\`Toast "\${message}" closed (shown \${count} times)\`);
+});
+
+SeoToast.warning('This toast has event handling', {
+  closeTime: 3000
+});`,
+
+  duplicates: `import { SeoToast } from 'seo-toast';
+
+// Multiple calls with same message show count
+SeoToast.info('Duplicate message test');
+SeoToast.info('Duplicate message test'); // Shows (2)
+SeoToast.info('Duplicate message test'); // Shows (3)`,
+
+  react: `import { useEffect } from 'react';
+import { SeoToast } from 'seo-toast';
+
+function App() {
+  useEffect(() => {
+    const handleToastClose = (event) => {
+      console.log('Toast closed:', event.detail);
+    };
+    
+    document.addEventListener('toast-close', handleToastClose);
+    return () => {
+      document.removeEventListener('toast-close', handleToastClose);
+    };
+  }, []);
+
+  const showSuccess = () => {
+    SeoToast.success('React integration works!');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <button type="submit">Submit</button>
-    </form>
+    <div>
+      <button onClick={showSuccess}>Show Toast</button>
+      <seo-toast position="top-center" />
+    </div>
   );
-}`;
-  }
+}`,
 
-  static getVueExample(): string {
-    return `<template>
-  <button @click="handleClick">Show Toast</button>
+  vue: `<template>
+  <div>
+    <button @click="showToast">Show Toast</button>
+    <seo-toast position="bottom-right" />
+  </div>
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from 'vue';
 import { SeoToast } from 'seo-toast';
-import 'seo-toast/dist/style.css';
 
-const handleClick = () => {
-  SeoToast.success('Vue 3 Composition API Toast!');
+const showToast = () => {
+  SeoToast.info('Vue integration successful!');
 };
-</script>`;
-  }
 
-  static getAngularExample(): string {
-    return `import { Component } from '@angular/core';
+let toastCloseHandler;
+
+onMounted(() => {
+  toastCloseHandler = (event) => {
+    console.log('Toast closed:', event.detail);
+  };
+  document.addEventListener('toast-close', toastCloseHandler);
+});
+
+onUnmounted(() => {
+  if (toastCloseHandler) {
+    document.removeEventListener('toast-close', toastCloseHandler);
+  }
+});
+</script>`,
+
+  angular: `import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { SeoToast } from 'seo-toast';
 
 @Component({
-  selector: 'app-example',
-  template: \`<button (click)="showToast()">Show Toast</button>\`
+  selector: 'app-toast-demo',
+  template: \`
+    <button (click)="showToast()">Show Toast</button>
+    <seo-toast position="top-left"></seo-toast>
+  \`,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ExampleComponent {
+export class ToastDemoComponent implements OnInit, OnDestroy {
+  private toastCloseHandler?: (event: any) => void;
+
+  ngOnInit() {
+    this.toastCloseHandler = (event: any) => {
+      console.log('Toast closed:', event.detail);
+    };
+    document.addEventListener('toast-close', this.toastCloseHandler);
+  }
+
+  ngOnDestroy() {
+    if (this.toastCloseHandler) {
+      document.removeEventListener('toast-close', this.toastCloseHandler);
+    }
+  }
+
   showToast() {
-    SeoToast.success('Angular Toast Example!');
+    SeoToast.warning('Angular integration ready!');
   }
-}`;
-  }
+}`,
 
-  static getSvelteExample(): string {
-    return `<script>
+  svelte: `<script>
+  import { onMount, onDestroy } from 'svelte';
   import { SeoToast } from 'seo-toast';
-  import 'seo-toast/dist/style.css';
 
-  function handleClick() {
-    SeoToast.success('Svelte Toast Example!');
-  }
+  let toastCloseHandler;
+
+  onMount(() => {
+    toastCloseHandler = (event) => {
+      console.log('Toast closed:', event.detail);
+    };
+    document.addEventListener('toast-close', toastCloseHandler);
+  });
+
+  onDestroy(() => {
+    if (toastCloseHandler) {
+      document.removeEventListener('toast-close', toastCloseHandler);
+    }
+  });
+
+  const showToast = () => {
+    SeoToast.error('Svelte integration complete!');
+  };
 </script>
 
-<button on:click={handleClick}>Show Toast</button>`;
+<button on:click={showToast}>Show Toast</button>
+<seo-toast position="bottom-center" />`,
+
+  vanilla: `<!DOCTYPE html>
+<html>
+<head>
+  <script type="module" src="https://unpkg.com/seo-toast/dist/seo-toast.min.js"></script>
+</head>
+<body>
+  <button id="toast-btn">Show Toast</button>
+  <seo-toast id="toast-container"></seo-toast>
+
+  <script>
+    document.getElementById('toast-btn').addEventListener('click', () => {
+      SeoToast.success('Vanilla JS works perfectly!');
+    });
+
+    // Event handling
+    document.addEventListener('toast-close', (event) => {
+      const { message, type, count } = event.detail;
+      console.log(\`Toast "\${message}" closed (shown \${count} times)\`);
+    });
+  </script>
+</body>
+</html>`,
+
+  typescript: `// TypeScript declarations for React
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'seo-toast': any;
+    }
   }
 }
 
-// Statistics and analytics (for demo purposes)
-class DemoAnalytics {
-  private stats = {
-    totalToasts: 0,
-    successToasts: 0,
-    errorToasts: 0,
-    warningToasts: 0,
-    infoToasts: 0
-  };
+// Import types
+import { SeoToast, ToastOptions, ToastConfig } from 'seo-toast';
 
+// Usage with types
+const options: ToastOptions = {
+  title: 'Custom Title',
+  closeTime: 3000,
+  showProgress: true,
+  customIcon: 'path/to/icon.svg'
+};
+
+const config: ToastConfig = {
+  position: 'top-right',
+  enterAnimation: 'bounce',
+  exitAnimation: 'fade'
+};
+
+SeoToast.success('TypeScript ready!', options);`,
+
+  'static-methods': `// Basic toast methods
+SeoToast.show(message, type?, options?)
+SeoToast.success(message, options?)
+SeoToast.error(message, options?)
+SeoToast.warning(message, options?)
+SeoToast.info(message, options?)
+
+// Global instance management
+SeoToast.getInstance(config?)`,
+
+  'config-types': `interface ToastOptions {
+  title?: string;           // Custom title text
+  customIcon?: string;      // SVG string or image URL
+  closeTime?: number;       // Override default close time
+  showTitle?: boolean;      // Show/hide title (default: true)
+  showProgress?: boolean;   // Show/hide progress bar (default: true)
+}
+
+interface ToastConfig {
+  position?: ToastPosition;     // Global position setting
+  enterAnimation?: AnimationType; // Global enter animation
+  exitAnimation?: AnimationType;  // Global exit animation
+}`,
+
+  'event-system': `// Listen for toast close events
+document.addEventListener('toast-close', (event) => {
+  const { message, type, count, title } = event.detail;
+  console.log('Toast closed:', { message, type, count });
+});
+
+// Event details interface
+interface ToastEventDetail {
+  message: string;
+  type: ToastType;
+  count: number;    // Number of times this message was shown
+  title?: string;   // Title if provided
+}`,
+
+  'css-vars': `seo-toast {
+  /* Container positioning */
+  --toast-container-top: 1rem;
+  --toast-container-right: 1rem;
+  --toast-container-z-index: 200000;
+  
+  /* Toast layout */
+  --toast-gap: 1rem;
+  --toast-padding: 0.5rem 0.5rem 1rem 0.5rem;
+  --toast-border-radius: 0.5rem;
+  --toast-min-width: 20rem;
+  --toast-max-width: 20rem;
+  
+  /* Type-specific backgrounds */
+  --toast-success-bg: #dcfce7;
+  --toast-error-bg: #fee2e2;
+  --toast-warning-bg: #fef3c7;
+  --toast-info-bg: #dbeafe;
+  
+  /* Animation timing */
+  --toast-enter-duration: 0.3s;
+  --toast-exit-duration: 0.2s;
+}`
+};
+
+// Demo class for managing demo functionality
+class DemoManager {
   constructor() {
-    this.trackToastEvents();
-    this.displayStats();
+    this.initializeEventListeners();
+    this.setupToastStatistics();
+    this.showWelcomeMessage();
   }
 
-  private trackToastEvents(): void {
-    toast.addEventListener('toast-close', (event: any) => {
-      this.stats.totalToasts++;
-      
-      switch (event.detail.type) {
-        case 'success':
-          this.stats.successToasts++;
-          break;
-        case 'error':
-          this.stats.errorToasts++;
-          break;
-        case 'warning':
-          this.stats.warningToasts++;
-          break;
-        case 'info':
-          this.stats.infoToasts++;
-          break;
-      }
-      
+  private initializeEventListeners(): void {
+    document.addEventListener('DOMContentLoaded', () => {
+      this.setupTabSwitching();
+      this.setupCopyButtons();
+      this.setupDemoButtons();
+      this.setupControlPanelHandlers();
+      this.updateActiveButtons();
+    });
+  }
+
+  private setupToastStatistics(): void {
+    // Toast event tracking for statistics
+    document.addEventListener('toast-close', (event: any) => {
+      // Statistics are updated when toasts are shown, not closed
       this.updateStatsDisplay();
     });
   }
 
-  private displayStats(): void {
-    // Create stats display element if it doesn't exist
-    if (!document.getElementById('demo-stats')) {
-      const statsEl = document.createElement('div');
-      statsEl.id = 'demo-stats';
-      statsEl.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 15px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-family: monospace;
-        z-index: 100000;
-        min-width: 200px;
-      `;
-      document.body.appendChild(statsEl);
-    }
-    
+  private updateToastStats(type: ToastType): void {
+    toastStats.total += 1;
+    toastStats[type] += 1;
     this.updateStatsDisplay();
   }
 
   private updateStatsDisplay(): void {
-    const statsEl = document.getElementById('demo-stats');
-    if (statsEl) {
-      statsEl.innerHTML = `
-        <div style="font-weight: bold; margin-bottom: 8px;">Demo Statistics</div>
-        <div>Total Toasts: ${this.stats.totalToasts}</div>
-        <div style="color: #10b981;">Success: ${this.stats.successToasts}</div>
-        <div style="color: #ef4444;">Error: ${this.stats.errorToasts}</div>
-        <div style="color: #f59e0b;">Warning: ${this.stats.warningToasts}</div>
-        <div style="color: #3b82f6;">Info: ${this.stats.infoToasts}</div>
-      `;
-    }
-  }
-}
+    const elements = {
+      total: document.getElementById('stat-total'),
+      success: document.getElementById('stat-success'),
+      error: document.getElementById('stat-error'),
+      warning: document.getElementById('stat-warning'),
+      info: document.getElementById('stat-info')
+    };
 
-// Smooth scrolling for navigation
-class SmoothScroll {
-  constructor() {
-    this.setupScrollBehavior();
+    Object.entries(elements).forEach(([key, element]) => {
+      if (element) {
+        element.textContent = toastStats[key as keyof ToastStats].toString();
+      }
+    });
   }
 
-  private setupScrollBehavior(): void {
-    // Add navigation if needed
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = anchor.getAttribute('href')?.substring(1);
-        const target = targetId ? document.getElementById(targetId) : null;
+  private setupTabSwitching(): void {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = (btn as HTMLElement).dataset.tab;
         
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+        // Update tab buttons
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update tab contents
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+          if (content.id === `tab-${targetTab}`) {
+            content.classList.add('active');
+          }
+        });
+      });
+    });
+  }
+
+  private setupCopyButtons(): void {
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const codeKey = (btn as HTMLElement).dataset.copy;
+        const code = copyCodeExamples[codeKey!];
+        
+        if (code) {
+          this.copyToClipboard(code);
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 2000);
         }
       });
     });
   }
+
+  private setupDemoButtons(): void {
+    // Quick demo buttons
+    document.getElementById('demo-success')?.addEventListener('click', (e) => {
+      if (typeof SeoToast !== 'undefined') {
+        SeoToast.success('Success! Operation completed successfully.');
+        this.updateToastStats('success');
+      } else {
+        console.log('SeoToast not loaded - would show: Success! Operation completed successfully.');
+      }
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+
+    document.getElementById('demo-error')?.addEventListener('click', (e) => {
+      if (typeof SeoToast !== 'undefined') {
+        SeoToast.error('Error! Something went wrong. Please try again.');
+        this.updateToastStats('error');
+      } else {
+        console.log('SeoToast not loaded - would show: Error! Something went wrong. Please try again.');
+      }
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+
+    document.getElementById('demo-warning')?.addEventListener('click', (e) => {
+      if (typeof SeoToast !== 'undefined') {
+        SeoToast.warning('Warning! Please check your input before proceeding.');
+        this.updateToastStats('warning');
+      } else {
+        console.log('SeoToast not loaded - would show: Warning! Please check your input before proceeding.');
+      }
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+
+    document.getElementById('demo-info')?.addEventListener('click', (e) => {
+      if (typeof SeoToast !== 'undefined') {
+        SeoToast.info('Info: New update is available for download.');
+        this.updateToastStats('info');
+      } else {
+        console.log('SeoToast not loaded - would show: Info: New update is available for download.');
+      }
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+
+    // Configured toast button
+    document.getElementById('showConfiguredToast')?.addEventListener('click', (e) => {
+      this.showConfiguredToast();
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+
+    // Test duplicates button
+    document.getElementById('testDuplicates')?.addEventListener('click', (e) => {
+      this.testDuplicates();
+      this.addButtonLoadingEffect(e.target as HTMLElement);
+    });
+  }
+
+  private setupControlPanelHandlers(): void {
+    // Toast type buttons
+    document.querySelectorAll('[data-type]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentConfig.type = (btn as HTMLElement).dataset.type as ToastType;
+        this.updateActiveButtons();
+      });
+    });
+
+    // Position buttons
+    document.querySelectorAll('[data-position]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentConfig.position = (btn as HTMLElement).dataset.position as ToastPosition;
+        if (typeof SeoToast !== 'undefined') {
+          SeoToast.getInstance({ position: currentConfig.position });
+        }
+        this.updateActiveButtons();
+      });
+    });
+
+    // Enter animation buttons
+    document.querySelectorAll('[data-enter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentConfig.enterAnimation = (btn as HTMLElement).dataset.enter as AnimationType;
+        if (typeof SeoToast !== 'undefined') {
+          SeoToast.getInstance({ enterAnimation: currentConfig.enterAnimation });
+        }
+        this.updateActiveButtons();
+      });
+    });
+
+    // Exit animation buttons
+    document.querySelectorAll('[data-exit]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentConfig.exitAnimation = (btn as HTMLElement).dataset.exit as AnimationType;
+        if (typeof SeoToast !== 'undefined') {
+          SeoToast.getInstance({ exitAnimation: currentConfig.exitAnimation });
+        }
+        this.updateActiveButtons();
+      });
+    });
+
+    // Icon buttons
+    document.querySelectorAll('[data-icon]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const iconType = (btn as HTMLElement).dataset.icon!;
+        const icons: Record<string, string> = {
+          star: '⭐',
+          heart: '❤️',
+          rocket: '🚀',
+          bell: '🔔',
+          custom: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/></svg>`,
+          none: ''
+        };
+        currentConfig.customIcon = icons[iconType];
+        this.updateActiveButtons();
+      });
+    });
+
+    // Form controls
+    const closeTimeInput = document.getElementById('closeTime') as HTMLInputElement;
+    closeTimeInput?.addEventListener('input', (e) => {
+      currentConfig.closeTime = parseInt((e.target as HTMLInputElement).value);
+    });
+
+    const customTitleInput = document.getElementById('customTitle') as HTMLInputElement;
+    customTitleInput?.addEventListener('input', (e) => {
+      currentConfig.customTitle = (e.target as HTMLInputElement).value;
+    });
+
+    const showTitleCheckbox = document.getElementById('showTitle') as HTMLInputElement;
+    showTitleCheckbox?.addEventListener('change', (e) => {
+      currentConfig.showTitle = (e.target as HTMLInputElement).checked;
+    });
+
+    const showProgressCheckbox = document.getElementById('showProgress') as HTMLInputElement;
+    showProgressCheckbox?.addEventListener('change', (e) => {
+      currentConfig.showProgress = (e.target as HTMLInputElement).checked;
+    });
+  }
+
+  private showConfiguredToast(): void {
+    const options: ToastOptions = {
+      closeTime: currentConfig.closeTime,
+      showTitle: currentConfig.showTitle,
+      showProgress: currentConfig.showProgress
+    };
+
+    if (currentConfig.customTitle) {
+      options.title = currentConfig.customTitle;
+    }
+
+    if (currentConfig.customIcon) {
+      options.customIcon = currentConfig.customIcon;
+    }
+
+    const message = `Configured ${currentConfig.type} toast with ${currentConfig.enterAnimation} enter and ${currentConfig.exitAnimation} exit animations at ${currentConfig.position}`;
+    
+    if (typeof SeoToast !== 'undefined') {
+      SeoToast[currentConfig.type](message, options);
+      this.updateToastStats(currentConfig.type);
+    } else {
+      console.log(`SeoToast not loaded - would show ${currentConfig.type}: ${message}`, options);
+    }
+  }
+
+  private testDuplicates(): void {
+    const message = 'Duplicate prevention test';
+    if (typeof SeoToast !== 'undefined') {
+      SeoToast.info(message);
+      this.updateToastStats('info');
+      setTimeout(() => {
+        SeoToast.info(message);
+        this.updateToastStats('info');
+      }, 500);
+      setTimeout(() => {
+        SeoToast.info(message);
+        this.updateToastStats('info');
+      }, 1000);
+    } else {
+      console.log('SeoToast not loaded - would show duplicate test');
+    }
+  }
+
+  private updateActiveButtons(): void {
+    // Reset all control buttons
+    document.querySelectorAll('.control-buttons .btn').forEach(btn => {
+      btn.classList.remove('btn--primary', 'btn--success', 'btn--error', 'btn--warning', 'btn--info');
+      btn.classList.add('btn--outline');
+    });
+
+    // Set active buttons based on current config
+    const typeBtn = document.querySelector(`[data-type="${currentConfig.type}"]`);
+    if (typeBtn) {
+      typeBtn.classList.remove('btn--outline');
+      typeBtn.classList.add(`btn--${currentConfig.type}`);
+    }
+    
+    const positionBtn = document.querySelector(`[data-position="${currentConfig.position}"]`);
+    if (positionBtn) {
+      positionBtn.classList.remove('btn--outline');
+      positionBtn.classList.add('btn--primary');
+    }
+    
+    const enterBtn = document.querySelector(`[data-enter="${currentConfig.enterAnimation}"]`);
+    if (enterBtn) {
+      enterBtn.classList.remove('btn--outline');
+      enterBtn.classList.add('btn--primary');
+    }
+    
+    const exitBtn = document.querySelector(`[data-exit="${currentConfig.exitAnimation}"]`);
+    if (exitBtn) {
+      exitBtn.classList.remove('btn--outline');
+      exitBtn.classList.add('btn--primary');
+    }
+
+    // Handle icon button selection
+    document.querySelectorAll('[data-icon]').forEach(btn => {
+      btn.classList.remove('btn--primary');
+      btn.classList.add('btn--outline');
+    });
+
+    // Set active icon button
+    if (currentConfig.customIcon) {
+      const activeIconBtn = Array.from(document.querySelectorAll('[data-icon]')).find(btn => {
+        const iconType = (btn as HTMLElement).dataset.icon!;
+        const icons: Record<string, string | null> = {
+          star: '⭐',
+          heart: '❤️',
+          rocket: '🚀',
+          bell: '🔔',
+          custom: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/></svg>`,
+          none: ''
+        };
+        return icons[iconType] === currentConfig.customIcon;
+      });
+
+      if (activeIconBtn) {
+        activeIconBtn.classList.remove('btn--outline');
+        activeIconBtn.classList.add('btn--primary');
+      }
+    }
+  }
+
+  private addButtonLoadingEffect(button: HTMLElement): void {
+    button.classList.add('loading');
+    setTimeout(() => {
+      button.classList.remove('loading');
+    }, 300);
+  }
+
+  private copyToClipboard(text: string): void {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Code copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  }
+
+  private showWelcomeMessage(): void {
+    setTimeout(() => {
+      if (typeof SeoToast !== 'undefined') {
+        SeoToast.info('Welcome to seo-toast demo! Try the interactive controls above.', {
+          closeTime: 4000
+        });
+        this.updateToastStats('info');
+      }
+    }, 1000);
+  }
 }
 
-// Initialize demo when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🎉 seo-toast Demo Page Loaded');
-  
-  // Initialize all demo functionality
-  new DemoHandlers();
-  new DemoAnalytics();
-  new SmoothScroll();
-
-  // Show welcome message
-  setTimeout(() => {
-    SeoToast.info('Welcome to seo-toast demo! Try the buttons above.', {
-      closeTime: 4000
-    });
-  }, 1000);
-
-  // Add some visual feedback for demo interactions
-  document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('click', function() {
-      this.classList.add('loading');
-      setTimeout(() => {
-        this.classList.remove('loading');
-      }, 300);
-    });
-  });
-});
+// Initialize demo when script loads
+new DemoManager();
 
 // Export for potential external use
-export { 
-  SeoToast, 
-  FrameworkExamples,
-  DemoHandlers 
-};
+export { DemoManager };

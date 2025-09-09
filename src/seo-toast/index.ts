@@ -1,6 +1,7 @@
 // seo-toast/index.ts
 import { AnimationType, ToastConfig, ToastOptions, ToastPosition, ToastType, ToastEventDetail } from './core/types';
 import { DEFAULT_CLOSE_TIME, DEFAULT_ICONS, DEFAULT_TITLES } from './core/constants';
+import '../../src/styles/components/style.scss';
 
 export class SeoToast extends HTMLElement {
   private toastMap = new Map<string, HTMLDivElement>();

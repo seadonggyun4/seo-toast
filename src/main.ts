@@ -1,1 +1,3 @@
-import './seo-toast/index'
+import {SeoToast} from'./seo-toast/index'
+
+export {SeoToast}
