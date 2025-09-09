@@ -1,23 +1,11 @@
-// seo-toast.ts
-import {
-  AnimationType,
-  ToastConfig,
-  ToastOptions,
-  ToastPosition,
-  ToastType,
-} from './core/types';
-import { MessageCache } from './core/cache';
-import { DEFAULT_CLOSE_TIME } from './core/constants';
-import { resolveIcon } from './core/icons';
-import { resolveTitle } from './core/titles';
-import { getAnimationClass } from './core/animations';
-import { escapeHtml } from './core/utils';
-import { wireToastInteractions } from './core/interactions';
+// seo-toast/index.ts
+import { AnimationType, ToastConfig, ToastOptions, ToastPosition, ToastType, ToastEventDetail } from './core/types';
+import { DEFAULT_CLOSE_TIME, DEFAULT_ICONS, DEFAULT_TITLES } from './core/constants';
 
 export class SeoToast extends HTMLElement {
-  // 상태/데이터는 유지
-  private messageCache = new MessageCache();
   private toastMap = new Map<string, HTMLDivElement>();
+  private messageCache = new Map<string, { timestamp: number; count: number }>();
+  private cleanupInterval: number | null = null;
 
   private _closeTime: number = DEFAULT_CLOSE_TIME;
   private _position: ToastPosition = 'top-right';
@@ -30,47 +18,45 @@ export class SeoToast extends HTMLElement {
 
   constructor() {
     super();
-    this.messageCache.start();
-    this.render(); // HTML 컨테이너만
+    this.startCleanup();
+    this.render();
   }
 
   disconnectedCallback(): void {
-    this.messageCache.stop();
+    this.stopCleanup();
   }
 
-  attributeChangedCallback(name: string, _o: string, n: string) {
-    if (_o === n) return;
+  attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
       case 'close-time':
-        this._closeTime = parseInt(n) || DEFAULT_CLOSE_TIME;
+        this._closeTime = parseInt(newValue) || DEFAULT_CLOSE_TIME;
         break;
       case 'position':
-        this._position = (n as ToastPosition) || 'top-right';
+        this._position = (newValue as ToastPosition) || 'top-right';
         this.updateContainerPosition();
         break;
       case 'enter-animation':
-        this._enterAnimation = (n as AnimationType) || 'slide';
+        this._enterAnimation = (newValue as AnimationType) || 'slide';
         break;
       case 'exit-animation':
-        this._exitAnimation = (n as AnimationType) || 'slide';
+        this._exitAnimation = (newValue as AnimationType) || 'slide';
         break;
     }
   }
 
-  // --- public getters/setters (변경 없음) ---
+  // Getters/Setters
   get closeTime() { return this._closeTime; }
-  set closeTime(v: number) { this._closeTime = v; this.setAttribute('close-time', String(v)); }
+  set closeTime(v: number) { this.setAttribute('close-time', String(v)); }
 
   get position() { return this._position; }
-  set position(v: ToastPosition) { this._position = v; this.setAttribute('position', v); }
+  set position(v: ToastPosition) { this.setAttribute('position', v); }
 
   get enterAnimation() { return this._enterAnimation; }
-  set enterAnimation(v: AnimationType) { this._enterAnimation = v; this.setAttribute('enter-animation', v); }
+  set enterAnimation(v: AnimationType) { this.setAttribute('enter-animation', v); }
 
   get exitAnimation() { return this._exitAnimation; }
-  set exitAnimation(v: AnimationType) { this._exitAnimation = v; this.setAttribute('exit-animation', v); }
+  set exitAnimation(v: AnimationType) { this.setAttribute('exit-animation', v); }
 
-  // --- HTML 렌더링 (컨테이너만) ---
   private render(): void {
     this.innerHTML = `<div class="toast-container"></div>`;
     this.updateContainerPosition();
@@ -86,43 +72,117 @@ export class SeoToast extends HTMLElement {
     return this.querySelector('.toast-container');
   }
 
-  private keyOf(type: ToastType, message: string, title?: string): string {
-    return `${type}:${message}:${title ?? ''}`;
+  // 단순화된 캐싱
+  private startCleanup(): void {
+    this.cleanupInterval = window.setInterval(() => {
+      const now = Date.now();
+      for (const [key, value] of this.messageCache.entries()) {
+        if (now - value.timestamp > 10000) { // 10초 후 정리
+          this.messageCache.delete(key);
+        }
+      }
+    }, 5000);
   }
 
-  // --- HTML 렌더링: 개별 토스트 DOM(문자열) 생성 ---
-  private createToastHtml(args: {
-    type: ToastType;
-    titleHtml?: string;
-    messageHtml: string;
-    iconHtml: string;
-    progressHtml?: string;
-  }): string {
-    const { type, titleHtml = '', messageHtml, iconHtml, progressHtml = '' } = args;
+  private stopCleanup(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+  }
+
+  // 메시지 키 생성
+  private createKey(type: ToastType, message: string, title?: string): string {
+    return `${type}:${message}:${title || ''}`;
+  }
+
+  // HTML 이스케이프 (인라인)
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // 아이콘 처리 (인라인)
+  private resolveIcon(type: ToastType, customIcon?: string): string {
+    if (customIcon) {
+      if (customIcon.startsWith('http') || customIcon.startsWith('/') || customIcon.startsWith('./')) {
+        return `<img src="${customIcon}" alt="${type} icon" />`;
+      }
+      return customIcon;
+    }
+    return DEFAULT_ICONS[type] || DEFAULT_ICONS.info;
+  }
+
+  // 애니메이션 클래스 (인라인)
+  private getAnimationClass(phase: 'enter' | 'exit', animation: AnimationType): string {
+    return `toast--${phase}-${animation}`;
+  }
+
+  // Toast HTML 생성
+  private createToastHtml(type: ToastType, message: string, options?: ToastOptions): string {
+    const showTitle = options?.showTitle !== false;
+    const showProgress = options?.showProgress !== false;
+    const title = options?.title || DEFAULT_TITLES[type];
+    const iconHtml = this.resolveIcon(type, options?.customIcon);
+
+    const titleHtml = showTitle 
+      ? `<div class="toast__title">${this.escapeHtml(title)}<span class="toast__count"></span></div>`
+      : '';
+
+    const progressHtml = showProgress
+      ? `<div class="toast__progress"><div class="toast__progress-bar toast__progress-bar--${type}"></div></div>`
+      : '';
+
     return `
       <div class="toast__icon-wrapper">${iconHtml}</div>
       <div class="toast__message" role="alert">
         ${titleHtml}
-        <div class="toast__desc">${messageHtml}</div>
+        <div class="toast__desc">${this.escapeHtml(message)}</div>
       </div>
       <button class="toast__close" type="button" aria-label="close">
-        <!-- close icon inserted via CSS background or constants if preferred -->
-        <span class="toast__close-icon"></span>
+        <span class="toast__close-icon">✕</span>
       </button>
       ${progressHtml}
     `;
   }
 
-  // --- 공개 API ---
+  // 단순화된 이벤트 디스패치
+  private dispatchToastEvent(type: string, detail: ToastEventDetail): void {
+    const event = new CustomEvent(type, {
+      detail,
+      bubbles: true,
+      composed: true
+    });
+    this.dispatchEvent(event);
+  }
+
+  // Toast 닫기 처리 (인라인)
+  private closeToast(toastEl: HTMLDivElement, key: string, detail: ToastEventDetail): void {
+    const exitClass = this.getAnimationClass('exit', this._exitAnimation);
+    toastEl.classList.add(exitClass);
+
+    const finalize = () => {
+      toastEl.remove();
+      this.messageCache.delete(key);
+      this.toastMap.delete(key);
+      this.dispatchToastEvent('toast-close', detail);
+    };
+
+    toastEl.addEventListener('transitionend', finalize, { once: true });
+    setTimeout(finalize, 500); // 안전장치
+  }
+
+  // 메인 API
   public showToast(message: string, type: ToastType = 'info', options?: ToastOptions): void {
     if (!message.trim()) return;
 
-    const key = this.keyOf(type, message, options?.title);
+    const key = this.createKey(type, message, options?.title);
     const now = Date.now();
-    const existing = this.messageCache.get(key);
     const closeTime = options?.closeTime ?? this._closeTime;
 
-    // 중복 처리
+    // 중복 처리 (단순화)
+    const existing = this.messageCache.get(key);
     if (existing && now - existing.timestamp < closeTime) {
       existing.count += 1;
       existing.timestamp = now;
@@ -131,43 +191,20 @@ export class SeoToast extends HTMLElement {
       if (toastEl) {
         const counter = toastEl.querySelector('.toast__count');
         if (counter) counter.textContent = `(${existing.count})`;
-        toastEl.dataset.count = String(existing.count);
       }
       return;
     }
 
-    // 신규 등록
+    // 새 Toast 생성
     this.messageCache.set(key, { timestamp: now, count: 1 });
-
-    // --- HTML 빌드(렌더링 전용) ---
-    const iconHtml = resolveIcon(type, options?.customIcon);
-    const showTitle = options?.showTitle !== false;
-    const showProgress = options?.showProgress !== false;
-    const title = resolveTitle(type, options?.title);
-
-    const titleHtml = showTitle
-      ? `<div class="toast__title">${escapeHtml(title)}<span class="toast__count"></span></div>`
-      : '';
-
-    const progressHtml = showProgress
-      ? `<div class="toast__progress"><div class="toast__progress-bar toast__progress-bar--${type}"></div></div>`
-      : '';
 
     const container = this.container;
     if (!container) return;
 
     const toast = document.createElement('div');
-    const enterClass = getAnimationClass('enter', this._enterAnimation);
+    const enterClass = this.getAnimationClass('enter', this._enterAnimation);
     toast.className = `toast toast--${type} ${enterClass}`;
-    toast.dataset.exitAnim = this._exitAnimation;
-    toast.dataset.count = '1';
-    toast.innerHTML = this.createToastHtml({
-      type,
-      titleHtml,
-      messageHtml: escapeHtml(message),
-      iconHtml,
-      progressHtml,
-    });
+    toast.innerHTML = this.createToastHtml(type, message, options);
 
     if (this._position.includes('top')) {
       container.prepend(toast);
@@ -176,28 +213,65 @@ export class SeoToast extends HTMLElement {
     }
     this.toastMap.set(key, toast);
 
-    // 진입 애니메이션 제거(rAF)
+    // 애니메이션 시작
     requestAnimationFrame(() => {
       toast.classList.remove(enterClass);
     });
 
-    // DOM 이벤트/타이머/진행바 등 “행동 로직”은 core/interactions.ts로 위임
-    wireToastInteractions({
-      toastEl: toast,
-      key,
+    // 이벤트 처리 (인라인)
+    const detail: ToastEventDetail = {
       message,
       type,
-      closeTime,
-      ...(showTitle ? { title } : {}),
-      showProgress,
-      onFinalize: (k) => {
-        this.messageCache.delete(k);
-        this.toastMap.delete(k);
-      },
-    });
+      count: 1,
+      ...(options?.title && { title: options.title })
+    };
+
+    let timeoutId: number;
+    let isPaused = false;
+    let remaining = closeTime;
+    let startTime = Date.now();
+
+    const progressBar = toast.querySelector('.toast__progress-bar') as HTMLElement | null;
+
+    const close = () => this.closeToast(toast, key, detail);
+
+    const startProgress = () => {
+      if (progressBar && options?.showProgress !== false) {
+        startTime = Date.now();
+        progressBar.style.animationDuration = `${remaining}ms`;
+        progressBar.style.animationPlayState = 'running';
+      }
+    };
+
+    const pauseProgress = () => {
+      if (!isPaused && progressBar) {
+        isPaused = true;
+        const elapsed = Date.now() - startTime;
+        remaining = Math.max(0, remaining - elapsed);
+        progressBar.style.animationPlayState = 'paused';
+        clearTimeout(timeoutId);
+      }
+    };
+
+    const resumeProgress = () => {
+      if (isPaused && progressBar) {
+        isPaused = false;
+        startProgress();
+        timeoutId = window.setTimeout(close, remaining);
+      }
+    };
+
+    // 이벤트 리스너
+    toast.addEventListener('mouseenter', pauseProgress);
+    toast.addEventListener('mouseleave', resumeProgress);
+    toast.querySelector('.toast__close')?.addEventListener('click', close);
+
+    // 진행바 시작
+    setTimeout(startProgress, 100);
+    timeoutId = window.setTimeout(close, closeTime);
   }
 
-  // --- 정적 전역 인스턴스 관리 ---
+  // 정적 인스턴스 관리
   private static globalInstance: SeoToast | null = null;
 
   static getInstance(config?: ToastConfig): SeoToast {
@@ -213,16 +287,29 @@ export class SeoToast extends HTMLElement {
     return SeoToast.globalInstance;
   }
 
+  // 정적 메서드들
   static show(message: string, type: ToastType = 'info', options?: ToastOptions): void {
     SeoToast.getInstance().showToast(message, type, options);
   }
-  static success(m: string, o?: ToastOptions) { SeoToast.show(m, 'success', o); }
-  static error(m: string, o?: ToastOptions) { SeoToast.show(m, 'error', o); }
-  static warning(m: string, o?: ToastOptions) { SeoToast.show(m, 'warning', o); }
-  static info(m: string, o?: ToastOptions) { SeoToast.show(m, 'info', o); }
+  
+  static success(message: string, options?: ToastOptions): void {
+    SeoToast.show(message, 'success', options);
+  }
+  
+  static error(message: string, options?: ToastOptions): void {
+    SeoToast.show(message, 'error', options);
+  }
+  
+  static warning(message: string, options?: ToastOptions): void {
+    SeoToast.show(message, 'warning', options);
+  }
+  
+  static info(message: string, options?: ToastOptions): void {
+    SeoToast.show(message, 'info', options);
+  }
 }
 
-// define
+// 컴포넌트 등록
 if (!customElements.get('seo-toast')) {
   customElements.define('seo-toast', SeoToast);
 }
