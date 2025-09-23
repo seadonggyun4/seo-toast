@@ -2,7 +2,7 @@
 
 A lightweight and versatile toast notification component built as a native Web Component. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.
 
-## ✨ Features
+## Features
 
 - 🎯 **4 Toast Types**: success, error, warning, info with built-in icons
 - 📍 **6 Positioning Options**: top/bottom left, right, and center
@@ -17,7 +17,7 @@ A lightweight and versatile toast notification component built as a native Web C
 - 🌐 **Framework Agnostic**: React, Vue, Angular, Svelte, vanilla JS
 - 💾 **Lightweight**: < 15KB gzipped
 
-## 📦 Installation
+## Installation
 
 ### NPM Installation
 ```bash
@@ -28,7 +28,7 @@ npm install seo-toast
 import 'seo-toast';
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Usage
 
@@ -79,7 +79,7 @@ toast.showToast('Custom message', 'warning', {
 });
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Component Attributes
 
@@ -174,7 +174,7 @@ interface ToastEventDetail {
 }
 ```
 
-## 🎨 Styling & Customization
+## Styling & Customization
 
 ### CSS Variables
 
@@ -291,7 +291,7 @@ seo-toast.minimal-theme {
 }
 ```
 
-## 🖼️ Custom Icons
+## Custom Icons
 
 ### SVG Strings
 
@@ -323,7 +323,7 @@ SeoToast.warning('Check input', {
 - **Format**: SVG, PNG, JPG, WebP supported
 - **Color**: Use `fill="currentColor"` for theme-aware SVGs
 
-## 🌐 Framework Integration
+## Framework Integration
 
 ### React
 
@@ -546,7 +546,7 @@ export class ToastDemoComponent implements OnInit, OnDestroy {
 }
 ```
 
-## 🔄 Migration Guide
+## Migration Guide
 
 ### From Other Toast Libraries
 
@@ -568,6 +568,6 @@ this.$toast.success('Success!');
 SeoToast.success('Success!');
 ```
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](https://github.com/seadonggyun4/seo-toast/blob/main/LICENSE) file for details.
