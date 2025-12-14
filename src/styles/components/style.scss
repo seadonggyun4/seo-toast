@@ -93,6 +93,7 @@ seo-toast {
   max-width: var(--toast-max-width, toast.$toast-max-width);
   border-radius: var(--toast-border-radius, toast.$toast-border-radius);
   overflow: hidden; // 프로그레스 바가 border-radius를 넘지 않도록
+  text-align: left; // 외부 CSS 영향 방지
 
   // 기본 transition
   transition:
