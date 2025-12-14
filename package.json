@@ -1,6 +1,6 @@
 {
   "name": "seo-toast",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A lightweight toast notification component built with pure Web Components. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.",
   "type": "module",
   "main": "./dist/index.js",
