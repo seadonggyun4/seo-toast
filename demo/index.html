@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>seo-toast - Universal Web Component Toast Library</title>
-  <meta name="description" content="Framework-agnostic toast component for React, Vue, Angular, Svelte and more">
-  
+  <meta name="description" content="Framework-agnostic toast component with native wrappers for React, Vue, Angular, Solid, Qwik and more">
+
   <!-- External CSS Dependencies -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" integrity="sha512-oHDEc8Xed4hiW6CxD7qjbnI+B07vDdX7hEPTvn9pSZO1bcRqHp8mj9pyr+8RVC2GmtEfI2Bi9Ke9Ass0as+zpg==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
@@ -39,10 +39,10 @@
     <div class="container">
       <h2 class="hero__title">Universal Toast Component<span>🍞</span></h2>
       <p class="hero__subtitle">
-        Framework-agnostic web component that works everywhere.<br>
-        TypeScript support, customizable animations, and zero dependencies.
+        Framework-agnostic web component with native wrappers.<br>
+        Zero dependencies, SSR compatible, TypeScript support.
       </p>
-      
+
       <!-- Framework Support -->
       <div class="framework-grid">
         <div class="framework-item">
@@ -58,8 +58,8 @@
           <span>Angular</span>
         </div>
         <div class="framework-item">
-          <i class="fas fa-code"></i>
-          <span>Svelte</span>
+          <i class="fas fa-cube"></i>
+          <span>Solid</span>
         </div>
         <div class="framework-item">
           <i class="fas fa-bolt"></i>
@@ -100,7 +100,7 @@
   <section class="section">
     <div class="container">
       <h2 class="section__title">Interactive Demo</h2>
-      
+
       <!-- Controls Panel -->
       <div class="controls-panel">
         <div class="controls-header">
@@ -161,7 +161,7 @@
               <h4>Options</h4>
               <div class="control-option">
                 <label>Close Time (ms):</label>
-                <input type="number" id="closeTime" value="2000" min="1000" max="10000" step="500">
+                <input type="number" id="closeTime" value="3000" min="1000" max="10000" step="500">
               </div>
               <div class="control-option">
                 <label>Custom Title:</label>
@@ -210,12 +210,13 @@
   <section class="section section--gray">
     <div class="container">
       <h2 class="section__title">Code Examples</h2>
-      
+
       <div class="tab-container">
         <!-- Tab Navigation -->
         <div class="tab-nav">
           <button class="tab-btn active" data-tab="basic">Basic Usage</button>
-          <button class="tab-btn" data-tab="frameworks">Framework Integration</button>
+          <button class="tab-btn" data-tab="wrappers">Framework Wrappers</button>
+          <button class="tab-btn" data-tab="vanilla">Vanilla Usage</button>
         </div>
 
         <!-- Basic Usage Tab -->
@@ -231,6 +232,32 @@
               </div>
               <div class="example-content">
                 <pre><code class="language-bash">npm install seo-toast</code></pre>
+              </div>
+            </div>
+
+            <!-- Module Imports -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3>Module Imports</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="imports">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-javascript">// Main component (auto-registers &lt;seo-toast&gt;)
+import 'seo-toast';
+
+// Component only
+import 'seo-toast/components/seo-toast';
+
+// Types (TypeScript)
+import type { ToastType, ToastPosition, ToastOptions } from 'seo-toast/types';
+
+// Event helpers
+import { eventHelpers, EVENT_NAMES } from 'seo-toast/event';
+
+// Constants
+import { DEFAULT_CONFIG, DEFAULT_TITLES } from 'seo-toast/constants';</code></pre>
               </div>
             </div>
 
@@ -256,7 +283,7 @@ SeoToast.info('New feature available');</code></pre>
             <!-- Position Configuration -->
             <div class="example-card">
               <div class="example-header">
-                <h3>Position Configuration</h3>
+                <h3>Position & Animation</h3>
                 <div class="example-actions">
                   <button class="copy-btn" data-copy="position">Copy</button>
                 </div>
@@ -264,35 +291,14 @@ SeoToast.info('New feature available');</code></pre>
               <div class="example-content">
                 <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
 
-// Configure toast position
-// top-left, top-center, top-right
-// bottom-left, bottom-center, bottom-right
-SeoToast.getInstance({ 
-  position: 'top-center' 
-});
-
-SeoToast.success('Positioned toast!');</code></pre>
-              </div>
-            </div>
-
-            <!-- Animation Types -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3>Animation Types</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="animations">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
-
-// Different animation types
-SeoToast.getInstance({
-  enterAnimation: 'bounce', // slide, fade, scale, bounce, flip
+// Configure toast instance
+const toast = SeoToast.getInstance({
+  position: 'bottom-center',     // top-left, top-center, top-right
+  enterAnimation: 'bounce',      // slide, fade, scale, bounce, flip
   exitAnimation: 'fade'
 });
 
-SeoToast.info('Animated toast!');</code></pre>
+toast.showToast('Configured toast!', 'success');</code></pre>
               </div>
             </div>
 
@@ -307,39 +313,12 @@ SeoToast.info('Animated toast!');</code></pre>
               <div class="example-content">
                 <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
 
-// Custom configuration
 SeoToast.success('Data saved!', {
   title: 'Success',
   closeTime: 5000,
   showProgress: true,
-  showTitle: true
-});</code></pre>
-              </div>
-            </div>
-
-            <!-- Custom Icons -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3>Custom Icons</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="custom-icons">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
-
-// Using custom image
-SeoToast.success('Profile updated!', {
-  customIcon: '/profile-icon.png'
-});
-
-// Using custom SVG
-const customSvg = `&lt;svg viewBox="0 0 24 24" fill="currentColor"&gt;
-  &lt;path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/&gt;
-&lt;/svg&gt;`;
-
-SeoToast.info('Custom star icon!', { 
-  customIcon: customSvg 
+  showTitle: true,
+  customIcon: '/path/to/icon.svg'
 });</code></pre>
               </div>
             </div>
@@ -353,16 +332,272 @@ SeoToast.info('Custom star icon!', {
                 </div>
               </div>
               <div class="example-content">
-                <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
-
-// Listen for toast close events
+                <pre><code class="language-javascript">// Listen for toast close events
 document.addEventListener('toast-close', (event) => {
-  const { message, type, count } = event.detail;
-  console.log(`Toast "${message}" closed (shown ${count} times)`);
+  const { message, type, count, reason } = event.detail;
+  // reason: 'timeout' | 'click' | 'manual'
+  console.log(`Toast closed: ${message} (${reason})`);
+});</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Framework Wrappers Tab -->
+        <div class="tab-content" id="tab-wrappers">
+          <div class="example-grid">
+            <!-- React Wrapper -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fab fa-react"></i> React Wrapper</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="react-wrapper">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-tsx">import { useRef } from 'react';
+import { SeoToast, type SeoToastRef } from 'seo-toast/react';
+
+function App() {
+  const toastRef = useRef&lt;SeoToastRef&gt;(null);
+
+  const handleSuccess = () => {
+    toastRef.current?.success('React toast works!');
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={handleSuccess}&gt;Show Toast&lt;/button&gt;
+      &lt;SeoToast
+        ref={toastRef}
+        position="top-right"
+        enterAnimation="bounce"
+        onClose={(e) => console.log('Closed:', e.detail)}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Vue Wrapper -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fab fa-vuejs"></i> Vue 3 Wrapper</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="vue-wrapper">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;button @click="showToast"&gt;Show Toast&lt;/button&gt;
+    &lt;SeoToast
+      ref="toastRef"
+      position="bottom-right"
+      @close="handleClose"
+    /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup lang="ts"&gt;
+import { ref } from 'vue';
+import { SeoToast } from 'seo-toast/vue';
+
+const toastRef = ref();
+
+const showToast = () => {
+  toastRef.value?.success('Vue toast works!');
+};
+
+const handleClose = (detail) => {
+  console.log('Toast closed:', detail);
+};
+&lt;/script&gt;</code></pre>
+              </div>
+            </div>
+
+            <!-- Angular Wrapper -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fab fa-angular"></i> Angular Wrapper</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="angular-wrapper">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-typescript">import { Component, ViewChild } from '@angular/core';
+import { SeoToastComponent } from 'seo-toast/angular';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [SeoToastComponent],
+  template: `
+    &lt;button (click)="showToast()"&gt;Show Toast&lt;/button&gt;
+    &lt;seo-toast-wrapper
+      #toast
+      position="top-center"
+      (close)="onClose($event)"
+    /&gt;
+  `
+})
+export class AppComponent {
+  @ViewChild('toast') toast!: SeoToastComponent;
+
+  showToast() {
+    this.toast.success('Angular toast works!');
+  }
+
+  onClose(detail: any) {
+    console.log('Toast closed:', detail);
+  }
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Solid Wrapper -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fas fa-cube"></i> Solid.js Wrapper</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="solid-wrapper">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-tsx">import { SeoToast, createToastHelpers, type SeoToastElement } from 'seo-toast/solid';
+
+function App() {
+  let toastRef: SeoToastElement | undefined;
+
+  const toast = () => createToastHelpers(toastRef);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() => toast().success('Solid toast!')}&gt;
+        Show Toast
+      &lt;/button&gt;
+      &lt;SeoToast
+        ref={(el) => (toastRef = el)}
+        position="top-right"
+        onClose={(detail) => console.log('Closed:', detail)}
+      /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Qwik Wrapper -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fas fa-bolt"></i> Qwik Wrapper</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="qwik-wrapper">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-tsx">import { component$, useSignal } from '@builder.io/qwik';
+import { SeoToast, useToastHelpers, type SeoToastElement } from 'seo-toast/qwik';
+
+export default component$(() => {
+  const toastRef = useSignal&lt;SeoToastElement&gt;();
+  const toast = useToastHelpers(toastRef);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick$={() => toast.success('Qwik toast!')}&gt;
+        Show Toast
+      &lt;/button&gt;
+      &lt;SeoToast
+        ref={toastRef}
+        position="bottom-center"
+        onClose$={(detail) => console.log('Closed:', detail)}
+      /&gt;
+    &lt;/div&gt;
+  );
+});</code></pre>
+              </div>
+            </div>
+
+            <!-- TypeScript Types -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fab fa-js"></i> TypeScript Types</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="typescript">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-typescript">import type {
+  ToastType,           // 'success' | 'error' | 'warning' | 'info'
+  ToastPosition,       // 'top-left' | 'top-center' | ...
+  AnimationType,       // 'slide' | 'fade' | 'scale' | 'bounce' | 'flip'
+  ToastOptions,        // { title?, closeTime?, showProgress?, ... }
+  ToastConfig,         // { position?, enterAnimation?, exitAnimation? }
+  ToastCloseEventDetail // { message, type, count, reason }
+} from 'seo-toast/types';</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vanilla Usage Tab -->
+        <div class="tab-content" id="tab-vanilla">
+          <div class="example-grid">
+            <!-- Vanilla JS -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3><i class="fab fa-js"></i> Vanilla JavaScript</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="vanilla">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;script type="module"&gt;
+    import 'seo-toast';
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button id="toast-btn"&gt;Show Toast&lt;/button&gt;
+  &lt;seo-toast position="top-right"&gt;&lt;/seo-toast&gt;
+
+  &lt;script&gt;
+    document.getElementById('toast-btn').addEventListener('click', () => {
+      SeoToast.success('Vanilla JS works!');
+    });
+
+    document.addEventListener('toast-close', (event) => {
+      console.log('Toast closed:', event.detail);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+              </div>
+            </div>
+
+            <!-- Custom Icons -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3>Custom Icons</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="custom-icons">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-javascript">// Using image URL
+SeoToast.success('Profile updated!', {
+  customIcon: '/icons/profile.png'
 });
 
-SeoToast.warning('This toast has event handling', {
-  closeTime: 3000
+// Using custom SVG
+SeoToast.info('Custom icon!', {
+  customIcon: `&lt;svg viewBox="0 0 24 24" fill="currentColor"&gt;
+    &lt;path d="M12 2l3.09 8.26L24 9l-6 5.74L19.18 24 12 19.5 4.82 24 6 14.74 0 9l8.91-1.26L12 2z"/&gt;
+  &lt;/svg&gt;`
 });</code></pre>
               </div>
             </div>
@@ -376,251 +611,82 @@ SeoToast.warning('This toast has event handling', {
                 </div>
               </div>
               <div class="example-content">
-                <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
-
-// Multiple calls with same message show count
+                <pre><code class="language-javascript">// Multiple calls with same message show count
 SeoToast.info('Duplicate message test');
 SeoToast.info('Duplicate message test'); // Shows (2)
 SeoToast.info('Duplicate message test'); // Shows (3)</code></pre>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Framework Integration Tab -->
-        <div class="tab-content" id="tab-frameworks">
-          <div class="example-grid">
-            <!-- React -->
+            <!-- CSS Variables -->
             <div class="example-card">
               <div class="example-header">
-                <h3><i class="fab fa-react"></i> React</h3>
+                <h3>CSS Customization</h3>
                 <div class="example-actions">
-                  <button class="copy-btn" data-copy="react">Copy</button>
+                  <button class="copy-btn" data-copy="css-vars">Copy</button>
                 </div>
               </div>
               <div class="example-content">
-                <pre><code class="language-jsx">import { useEffect } from 'react';
-import { SeoToast } from 'seo-toast';
+                <pre><code class="language-css">seo-toast {
+  --toast-container-top: 1rem;
+  --toast-container-right: 1rem;
+  --toast-min-width: 20rem;
+  --toast-max-width: 20rem;
+  --toast-border-radius: 0.5rem;
 
-function App() {
-  useEffect(() => {
-    const handleToastClose = (event) => {
-      console.log('Toast closed:', event.detail);
-    };
-    
-    document.addEventListener('toast-close', handleToastClose);
-    return () => {
-      document.removeEventListener('toast-close', handleToastClose);
-    };
-  }, []);
+  --toast-success-bg: #dcfce7;
+  --toast-error-bg: #fee2e2;
+  --toast-warning-bg: #fef3c7;
+  --toast-info-bg: #dbeafe;
 
-  const showSuccess = () => {
-    SeoToast.success('React integration works!');
-  };
-
-  return (
-    &lt;div&gt;
-      &lt;button onClick={showSuccess}&gt;Show Toast&lt;/button&gt;
-      &lt;seo-toast position="top-center" /&gt;
-    &lt;/div&gt;
-  );
+  --toast-enter-duration: 0.3s;
+  --toast-exit-duration: 0.2s;
 }</code></pre>
               </div>
             </div>
 
-            <!-- Vue 3 -->
+            <!-- Responsive -->
             <div class="example-card">
               <div class="example-header">
-                <h3><i class="fab fa-vuejs"></i> Vue 3</h3>
+                <h3>Responsive Design</h3>
                 <div class="example-actions">
-                  <button class="copy-btn" data-copy="vue">Copy</button>
+                  <button class="copy-btn" data-copy="responsive">Copy</button>
                 </div>
               </div>
               <div class="example-content">
-                <pre><code class="language-javascript">&lt;template&gt;
-  &lt;div&gt;
-    &lt;button @click="showToast"&gt;Show Toast&lt;/button&gt;
-    &lt;seo-toast position="bottom-right" /&gt;
-  &lt;/div&gt;
-&lt;/template&gt;
-
-&lt;script setup&gt;
-import { onMounted, onUnmounted } from 'vue';
-import { SeoToast } from 'seo-toast';
-
-const showToast = () => {
-  SeoToast.info('Vue integration successful!');
-};
-
-let toastCloseHandler;
-
-onMounted(() => {
-  toastCloseHandler = (event) => {
-    console.log('Toast closed:', event.detail);
-  };
-  document.addEventListener('toast-close', toastCloseHandler);
-});
-
-onUnmounted(() => {
-  if (toastCloseHandler) {
-    document.removeEventListener('toast-close', toastCloseHandler);
-  }
-});
-&lt;/script&gt;</code></pre>
-              </div>
-            </div>
-
-            <!-- Angular -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3><i class="fab fa-angular"></i> Angular</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="angular">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-typescript">import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { SeoToast } from 'seo-toast';
-
-@Component({
-  selector: 'app-toast-demo',
-  template: `
-    &lt;button (click)="showToast()"&gt;Show Toast&lt;/button&gt;
-    &lt;seo-toast position="top-left"&gt;&lt;/seo-toast&gt;
-  `,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
-})
-export class ToastDemoComponent implements OnInit, OnDestroy {
-  private toastCloseHandler?: (event: any) => void;
-
-  ngOnInit() {
-    this.toastCloseHandler = (event: any) => {
-      console.log('Toast closed:', event.detail);
-    };
-    document.addEventListener('toast-close', this.toastCloseHandler);
-  }
-
-  ngOnDestroy() {
-    if (this.toastCloseHandler) {
-      document.removeEventListener('toast-close', this.toastCloseHandler);
-    }
-  }
-
-  showToast() {
-    SeoToast.warning('Angular integration ready!');
-  }
-}</code></pre>
-              </div>
-            </div>
-
-            <!-- Svelte -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3><i class="fas fa-code"></i> Svelte</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="svelte">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-javascript">&lt;script&gt;
-  import { onMount, onDestroy } from 'svelte';
-  import { SeoToast } from 'seo-toast';
-
-  let toastCloseHandler;
-
-  onMount(() => {
-    toastCloseHandler = (event) => {
-      console.log('Toast closed:', event.detail);
-    };
-    document.addEventListener('toast-close', toastCloseHandler);
-  });
-
-  onDestroy(() => {
-    if (toastCloseHandler) {
-      document.removeEventListener('toast-close', toastCloseHandler);
-    }
-  });
-
-  const showToast = () => {
-    SeoToast.error('Svelte integration complete!');
-  };
-&lt;/script&gt;
-
-&lt;button on:click={showToast}&gt;Show Toast&lt;/button&gt;
-&lt;seo-toast position="bottom-center" /&gt;</code></pre>
-              </div>
-            </div>
-
-            <!-- Vanilla JS -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3><i class="fab fa-js"></i> Vanilla JavaScript</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="vanilla">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-  &lt;script type="module" src="https://unpkg.com/seo-toast/dist/seo-toast.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;button id="toast-btn"&gt;Show Toast&lt;/button&gt;
-  &lt;seo-toast id="toast-container"&gt;&lt;/seo-toast&gt;
-
-  &lt;script&gt;
-    document.getElementById('toast-btn').addEventListener('click', () => {
-      SeoToast.success('Vanilla JS works perfectly!');
-    });
-
-    // Event handling
-    document.addEventListener('toast-close', (event) => {
-      const { message, type, count } = event.detail;
-      console.log(`Toast "${message}" closed (shown ${count} times)`);
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-              </div>
-            </div>
-
-            <!-- TypeScript Declarations -->
-            <div class="example-card">
-              <div class="example-header">
-                <h3><i class="fab fa-js"></i> TypeScript</h3>
-                <div class="example-actions">
-                  <button class="copy-btn" data-copy="typescript">Copy</button>
-                </div>
-              </div>
-              <div class="example-content">
-                <pre><code class="language-typescript">// TypeScript declarations for React
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'seo-toast': any;
-    }
+                <pre><code class="language-css">@media (max-width: 768px) {
+  seo-toast {
+    --toast-min-width: calc(100vw - 2rem);
+    --toast-max-width: calc(100vw - 2rem);
   }
 }
 
-// Import types
-import { SeoToast, ToastOptions, ToastConfig } from 'seo-toast';
+@media (prefers-reduced-motion: reduce) {
+  seo-toast {
+    --toast-enter-duration: 0.1s;
+    --toast-exit-duration: 0.1s;
+  }
+}</code></pre>
+              </div>
+            </div>
 
-// Usage with types
-const options: ToastOptions = {
-  title: 'Custom Title',
-  closeTime: 3000,
-  showProgress: true,
-  customIcon: 'path/to/icon.svg'
-};
-
-const config: ToastConfig = {
-  position: 'top-right',
-  enterAnimation: 'bounce',
-  exitAnimation: 'fade'
-};
-
-SeoToast.success('TypeScript ready!', options);</code></pre>
+            <!-- Dark Theme -->
+            <div class="example-card">
+              <div class="example-header">
+                <h3>Dark Theme</h3>
+                <div class="example-actions">
+                  <button class="copy-btn" data-copy="dark-theme">Copy</button>
+                </div>
+              </div>
+              <div class="example-content">
+                <pre><code class="language-css">seo-toast.dark-theme {
+  --toast-success-bg: #064e3b;
+  --toast-error-bg: #7f1d1d;
+  --toast-warning-bg: #78350f;
+  --toast-info-bg: #1e3a8a;
+  --toast-box-shadow: 0 4px 8px rgba(0,0,0,.3);
+  color: white;
+}</code></pre>
               </div>
             </div>
           </div>
@@ -633,50 +699,41 @@ SeoToast.success('TypeScript ready!', options);</code></pre>
   <section class="section">
     <div class="container">
       <h2 class="section__title">API Reference</h2>
-      
+
       <div class="example-grid">
         <!-- Static Methods -->
         <div class="example-card">
           <div class="example-header">
             <h3>Static Methods</h3>
-            <div class="example-actions">
-              <button class="copy-btn" data-copy="static-methods">Copy</button>
-            </div>
           </div>
           <div class="example-content">
-            <pre><code class="language-typescript">// Basic toast methods
-SeoToast.show(message, type?, options?)
+            <pre><code class="language-typescript">SeoToast.show(message, type?, options?)
 SeoToast.success(message, options?)
 SeoToast.error(message, options?)
 SeoToast.warning(message, options?)
 SeoToast.info(message, options?)
-
-// Global instance management
 SeoToast.getInstance(config?)</code></pre>
           </div>
         </div>
 
-        <!-- Configuration Options -->
+        <!-- Configuration Types -->
         <div class="example-card">
           <div class="example-header">
             <h3>Configuration Types</h3>
-            <div class="example-actions">
-              <button class="copy-btn" data-copy="config-types">Copy</button>
-            </div>
           </div>
           <div class="example-content">
             <pre><code class="language-typescript">interface ToastOptions {
-  title?: string;           // Custom title text
-  customIcon?: string;      // SVG string or image URL
-  closeTime?: number;       // Override default close time
-  showTitle?: boolean;      // Show/hide title (default: true)
-  showProgress?: boolean;   // Show/hide progress bar (default: true)
+  title?: string;
+  customIcon?: string;
+  closeTime?: number;
+  showTitle?: boolean;      // default: true
+  showProgress?: boolean;   // default: true
 }
 
 interface ToastConfig {
-  position?: ToastPosition;     // Global position setting
-  enterAnimation?: AnimationType; // Global enter animation
-  exitAnimation?: AnimationType;  // Global exit animation
+  position?: ToastPosition;
+  enterAnimation?: AnimationType;
+  exitAnimation?: AnimationType;
 }</code></pre>
           </div>
         </div>
@@ -685,59 +742,32 @@ interface ToastConfig {
         <div class="example-card">
           <div class="example-header">
             <h3>Event System</h3>
-            <div class="example-actions">
-              <button class="copy-btn" data-copy="event-system">Copy</button>
-            </div>
           </div>
           <div class="example-content">
-            <pre><code class="language-typescript">// Listen for toast close events
-document.addEventListener('toast-close', (event) => {
-  const { message, type, count, title } = event.detail;
-  console.log('Toast closed:', { message, type, count });
-});
-
-// Event details interface
-interface ToastEventDetail {
+            <pre><code class="language-typescript">interface ToastCloseEventDetail {
   message: string;
   type: ToastType;
-  count: number;    // Number of times this message was shown
-  title?: string;   // Title if provided
-}</code></pre>
+  count: number;
+  title?: string;
+  reason: 'timeout' | 'click' | 'manual';
+}
+
+// Events: 'toast-show', 'toast-close', 'toast-click'</code></pre>
           </div>
         </div>
 
-        <!-- CSS Variables -->
+        <!-- Attributes -->
         <div class="example-card">
           <div class="example-header">
-            <h3>CSS Customization</h3>
-            <div class="example-actions">
-              <button class="copy-btn" data-copy="css-vars">Copy</button>
-            </div>
+            <h3>HTML Attributes</h3>
           </div>
           <div class="example-content">
-            <pre><code class="language-css">seo-toast {
-  /* Container positioning */
-  --toast-container-top: 1rem;
-  --toast-container-right: 1rem;
-  --toast-container-z-index: 200000;
-  
-  /* Toast layout */
-  --toast-gap: 1rem;
-  --toast-padding: 0.5rem 0.5rem 1rem 0.5rem;
-  --toast-border-radius: 0.5rem;
-  --toast-min-width: 20rem;
-  --toast-max-width: 20rem;
-  
-  /* Type-specific backgrounds */
-  --toast-success-bg: #dcfce7;
-  --toast-error-bg: #fee2e2;
-  --toast-warning-bg: #fef3c7;
-  --toast-info-bg: #dbeafe;
-  
-  /* Animation timing */
-  --toast-enter-duration: 0.3s;
-  --toast-exit-duration: 0.2s;
-}</code></pre>
+            <pre><code class="language-html">&lt;seo-toast
+  close-time="3000"
+  position="top-right"
+  enter-animation="slide"
+  exit-animation="fade"
+&gt;&lt;/seo-toast&gt;</code></pre>
           </div>
         </div>
       </div>
