@@ -8,18 +8,40 @@ export default defineConfig({
     outDir: 'dist',
     lib: {
       entry: {
+        // Core entries
         index: resolve(__dirname, 'src/index.ts'),
         'components/seo-toast/index': resolve(__dirname, 'src/components/seo-toast/index.ts'),
-        'components/seo-toast-search/index': resolve(__dirname, 'src/components/seo-toast-search/index.ts'),
         'event/index': resolve(__dirname, 'src/event/index.ts'),
-        'types/index': resolve(__dirname, 'src/types/index.ts')
+        'types/index': resolve(__dirname, 'src/types/index.ts'),
+        'constants/constants': resolve(__dirname, 'src/constants/constants.ts'),
+        // Framework wrappers
+        'wrappers/react/index': resolve(__dirname, 'src/wrappers/react/index.tsx'),
+        'wrappers/vue/index': resolve(__dirname, 'src/wrappers/vue/index.ts'),
+        'wrappers/angular/index': resolve(__dirname, 'src/wrappers/angular/index.ts'),
+        'wrappers/solid/index': resolve(__dirname, 'src/wrappers/solid/index.tsx'),
+        'wrappers/qwik/index': resolve(__dirname, 'src/wrappers/qwik/index.tsx'),
       },
       formats: ['es'],
       fileName: (format, entryName) => `${entryName}.js`,
       name: 'SeoToast'
     },
     rollupOptions: {
-      external: ['lit'],
+      external: [
+        // React
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        // Vue
+        'vue',
+        // Angular
+        '@angular/core',
+        '@angular/common',
+        // Solid
+        'solid-js',
+        'solid-js/web',
+        // Qwik
+        '@builder.io/qwik',
+      ],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',
@@ -30,7 +52,11 @@ export default defineConfig({
         interop: 'auto'
       },
       treeshake: {
-        moduleSideEffects: false,
+        moduleSideEffects: (id) => {
+          // Keep side effects for component imports in wrappers
+          if (id.includes('components/seo-toast')) return true;
+          return false;
+        },
         propertyReadSideEffects: false,
         unknownGlobalSideEffects: false
       }

@@ -12,7 +12,6 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "bundler",
@@ -28,7 +27,8 @@
     "useDefineForClassFields": false,
     "sourceMap": false,
     "inlineSourceMap": false,
-    "inlineSources": false
+    "inlineSources": false,
+    "jsx": "react-jsx"
   },
   "include": [
     "src/**/*"
@@ -39,6 +39,7 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "demo/**/*",
-    "scripts/**/*"
+    "scripts/**/*",
+    "src/wrappers/**/*"
   ]
 }

@@ -1,3 +1,7 @@
-import {SeoToast} from'./seo-toast/index'
+/**
+ * Demo entry point for seo-toast
+ */
+import { SeoToast } from './components/seo-toast/index';
 
-export {SeoToast}
+// Export for demo usage
+export { SeoToast };
