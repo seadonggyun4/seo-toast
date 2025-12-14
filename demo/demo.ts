@@ -8,6 +8,9 @@
 // Import SeoToast component
 import { SeoToast } from '../src/main';
 
+// Register SeoToast globally for demo modules
+(window as any).SeoToast = SeoToast;
+
 // Import modules
 import {
   DemoManager,

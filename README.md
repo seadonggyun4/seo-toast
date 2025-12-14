@@ -2,8 +2,8 @@
 
 A lightweight and versatile toast notification component built as a native Web Component. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.
 
-[![npm version](https://img.shields.io/npm/v/seo-toast.svg)](https://www.npmjs.com/package/seo-toast)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm downloads](https://img.shields.io/npm/dm/seo-toast.svg)](https://www.npmjs.com/package/seo-toast)
+[![GitHub stars](https://img.shields.io/github/stars/seadonggyun4/seo-toast.svg)](https://github.com/seadonggyun4/seo-toast/stargazers)
 
 **[Live Demo](https://seo-toast.netlify.app/)** | **[NPM Package](https://www.npmjs.com/package/seo-toast)**
 
