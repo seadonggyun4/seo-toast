@@ -33,11 +33,11 @@ export class SeoToast extends HTMLElement {
 
   constructor() {
     super();
-    this.startCleanup();
-    this.render();
   }
 
   connectedCallback(): void {
+    this.startCleanup();
+    this.render();
     this.updateContainerPosition();
   }
 
