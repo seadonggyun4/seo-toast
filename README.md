@@ -2,35 +2,71 @@
 
 A lightweight and versatile toast notification component built as a native Web Component. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.
 
+[![npm version](https://img.shields.io/npm/v/seo-toast.svg)](https://www.npmjs.com/package/seo-toast)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**[Live Demo](https://seo-toast.netlify.app/)** | **[NPM Package](https://www.npmjs.com/package/seo-toast)**
+
 ## Features
 
-- 🎯 **4 Toast Types**: success, error, warning, info with built-in icons
-- 📍 **6 Positioning Options**: top/bottom left, right, and center
-- 🎭 **5 Animation Types**: slide, fade, scale, bounce, flip for enter/exit
-- ⏱️ **Progress Indicator**: Visual countdown with pause on hover
-- 🔄 **Duplicate Handling**: Smart grouping of identical messages with counters
-- 🎨 **Customizable Styling**: SCSS variables for complete visual control
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- ♿ **Accessibility**: ARIA labels and keyboard navigation support
-- 🖼️ **Custom Icons**: SVG strings or image URLs
-- 📦 **Zero Dependencies**: Pure Web Components, no external libraries
-- 🌐 **Framework Agnostic**: React, Vue, Angular, Svelte, vanilla JS
-- 💾 **Lightweight**: < 15KB gzipped
+- **4 Toast Types**: success, error, warning, info with built-in icons
+- **6 Positioning Options**: top/bottom left, right, and center
+- **5 Animation Types**: slide, fade, scale, bounce, flip for enter/exit
+- **Progress Indicator**: Visual countdown with pause on hover
+- **Duplicate Handling**: Smart grouping of identical messages with counters
+- **Customizable Styling**: SCSS variables for complete visual control
+- **Responsive Design**: Works on desktop and mobile devices
+- **Accessibility**: ARIA labels and keyboard navigation support
+- **Custom Icons**: SVG strings or image URLs
+- **Zero Dependencies**: Pure Web Components, no external libraries
+- **SSR Compatible**: Safe for server-side rendering environments
+- **Framework Wrappers**: Native support for React, Vue, Angular, Solid, Qwik
+- **Lightweight**: ~10KB gzipped
 
 ## Installation
 
-### NPM Installation
 ```bash
 npm install seo-toast
 ```
 
-```javascript
-import 'seo-toast';
-```
-
 ## Quick Start
 
-### Basic Usage
+### Basic Import
+
+```javascript
+// Import component (auto-registers <seo-toast> element)
+import 'seo-toast';
+
+// Use static methods
+SeoToast.success('Operation completed!');
+SeoToast.error('Something went wrong!');
+SeoToast.warning('Please check your input');
+SeoToast.info('New feature available');
+```
+
+### Module Imports
+
+```javascript
+// Main component
+import 'seo-toast';
+
+// Component only
+import 'seo-toast/components/seo-toast';
+
+// Types (TypeScript)
+import type { ToastType, ToastPosition, ToastOptions } from 'seo-toast/types';
+
+// Event helpers
+import { eventHelpers, EVENT_NAMES } from 'seo-toast/event';
+
+// Constants
+import { DEFAULT_CONFIG, DEFAULT_TITLES } from 'seo-toast/constants';
+
+// Styles only
+import 'seo-toast/styles';
+```
+
+### HTML Usage
 
 ```html
 <!DOCTYPE html>
@@ -41,16 +77,9 @@ import 'seo-toast';
   </script>
 </head>
 <body>
-  <!-- Optional: Add container for custom positioning -->
   <seo-toast position="top-right"></seo-toast>
-  
-  <script>
-    // Show different types of toasts
-    SeoToast.success('Operation completed successfully!');
-    SeoToast.error('Something went wrong!');
-    SeoToast.warning('Please check your input');
-    SeoToast.info('New feature available');
-  </script>
+
+  <button onclick="SeoToast.success('Hello!')">Show Toast</button>
 </body>
 </html>
 ```
@@ -58,6 +87,8 @@ import 'seo-toast';
 ### Advanced Usage
 
 ```javascript
+import { SeoToast } from 'seo-toast';
+
 // Custom configuration
 SeoToast.success('Data saved!', {
   title: 'Success',
@@ -79,291 +110,36 @@ toast.showToast('Custom message', 'warning', {
 });
 ```
 
-## Configuration
-
-### Component Attributes
-
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `close-time` | number | 2000 | Auto-close duration in milliseconds |
-| `position` | string | 'top-right' | Toast display position |
-| `enter-animation` | string | 'slide' | Animation when toast appears |
-| `exit-animation` | string | 'slide' | Animation when toast disappears |
-
-### Position Options
-
-- **Top positions**: `top-left`, `top-right`, `top-center`
-- **Bottom positions**: `bottom-left`, `bottom-right`, `bottom-center`
-
-### Animation Options
-
-- **slide**: Slides in from the side (default)
-- **fade**: Fades in/out with opacity
-- **scale**: Scales up/down from center
-- **bounce**: Bouncy entrance effect
-- **flip**: 3D flip animation
-
-### ToastOptions Interface
-
-```typescript
-interface ToastOptions {
-  title?: string;                 // Custom title text
-  customIcon?: string;           // SVG string or image URL
-  closeTime?: number;            // Override default close time
-  showTitle?: boolean;           // Show/hide title (default: true)
-  showProgress?: boolean;        // Show/hide progress bar (default: true)
-}
-```
-
-### ToastConfig Interface
-
-```typescript
-interface ToastConfig {
-  position?: ToastPosition;      // Global position setting
-  enterAnimation?: AnimationType; // Global enter animation
-  exitAnimation?: AnimationType;  // Global exit animation
-}
-```
-
-## 📋 API Reference
-
-### Static Methods
-
-```javascript
-// Basic toast methods
-SeoToast.show(message, type?, options?)
-SeoToast.success(message, options?)
-SeoToast.error(message, options?)
-SeoToast.warning(message, options?)
-SeoToast.info(message, options?)
-
-// Global instance management
-SeoToast.getInstance(config?)
-```
-
-### Instance Methods
-
-```javascript
-const toast = SeoToast.getInstance();
-
-// Show toast
-toast.showToast(message, type?, options?)
-
-// Property getters/setters
-toast.closeTime = 3000;
-toast.position = 'bottom-center';
-toast.enterAnimation = 'bounce';
-toast.exitAnimation = 'scale';
-```
-
-### Event System
-
-```javascript
-// Listen for toast close events
-document.addEventListener('toast-close', (event) => {
-  const { message, type, count, title } = event.attach;
-  console.log('Toast closed:', { message, type, count });
-});
-
-// Event details
-interface ToastEventDetail {
-  message: string;
-  type: ToastType;
-  count: number;      // Number of times this message was shown
-  title?: string;     // Title if provided
-}
-```
-
-## Styling & Customization
-
-### CSS Variables
-
-seo-toast uses CSS custom properties for easy theming:
-
-```css
-seo-toast {
-  /* Container positioning */
-  --toast-container-top: 1rem;
-  --toast-container-right: 1rem;
-  --toast-container-z-index: 200000;
-  
-  /* Toast layout */
-  --toast-gap: 1rem;
-  --toast-padding: 0.5rem 0.5rem 1rem 0.5rem;
-  --toast-border-radius: 0.5rem;
-  --toast-min-width: 20rem;
-  --toast-max-width: 20rem;
-  --toast-box-shadow: 0 2px 2px rgba(0,0,0,.1);
-  
-  /* Type-specific backgrounds */
-  --toast-success-bg: #dcfce7;
-  --toast-error-bg: #fee2e2;
-  --toast-warning-bg: #fef3c7;
-  --toast-info-bg: #dbeafe;
-  
-  /* Animation timing */
-  --toast-enter-duration: 0.3s;
-  --toast-exit-duration: 0.2s;
-  --toast-enter-easing: ease-out;
-  --toast-exit-easing: ease-out;
-}
-```
-
-### 🎨 Layout & Sizing Variables
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `--toast-gap` | 1rem | Gap between multiple toasts |
-| `--toast-margin-bottom` | 1rem | Bottom margin of each toast |
-| `--toast-padding` | 0.5rem 0.5rem 1rem 0.5rem | Internal padding |
-| `--toast-border-width` | 1px | Border thickness |
-| `--toast-border-radius` | 0.5rem | Rounded corners |
-| `--toast-min-width` | 20rem | Minimum toast width |
-| `--toast-max-width` | 20rem | Maximum toast width |
-
-### 🎭 Animation Variables
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `--toast-enter-duration` | 0.3s | Enter animation duration |
-| `--toast-exit-duration` | 0.2s | Exit animation duration |
-| `--toast-enter-easing` | ease-out | Enter animation timing |
-| `--toast-exit-easing` | ease-out | Exit animation timing |
-| `--toast-enter-transform` | translateX(10%) | Enter transform |
-| `--toast-exit-transform` | translateY(10%) | Exit transform |
-
-### 🎯 Icon & Message Variables
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `--toast-icon-size` | 2rem | Icon wrapper size |
-| `--toast-icon-border-radius` | 50% | Icon border radius |
-| `--toast-icon-svg-size` | 1.2rem | SVG icon size |
-| `--toast-title-font-weight` | bold | Title font weight |
-| `--toast-title-font-size` | 0.9rem | Title font size |
-| `--toast-desc-font-size` | 0.9rem | Description font size |
-| `--toast-desc-line-height` | 1.4 | Description line height |
-
-### 📊 Progress Bar Variables
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `--toast-progress-height` | 3px | Progress bar height |
-
-### ❌ Close Button Variables
-
-| Variable | Default Value | Description |
-|----------|---------------|-------------|
-| `--toast-close-top` | 0.75rem | Close button top position |
-| `--toast-close-right` | 0.75rem | Close button right position |
-| `--toast-close-size` | 2.4rem | Close button size |
-| `--toast-close-icon-size` | 1.6rem | Close icon size |
-
-### Custom Themes
-
-```css
-/* Dark theme example */
-seo-toast.dark-theme {
-  --toast-success-bg: #064e3b;
-  --toast-error-bg: #7f1d1d;
-  --toast-warning-bg: #78350f;
-  --toast-info-bg: #1e3a8a;
-  
-  --toast-box-shadow: 0 4px 8px rgba(0,0,0,.3);
-  color: white;
-}
-
-/* Minimal theme example */
-seo-toast.minimal-theme {
-  --toast-border-radius: 0;
-  --toast-box-shadow: none;
-  --toast-padding: 1rem;
-  --toast-border-width: 0;
-}
-
-/* Large screens optimization */
-@media (min-width: 768px) {
-  seo-toast {
-    --toast-min-width: 24rem;
-    --toast-max-width: 24rem;
-    --toast-padding: 1rem;
-  }
-}
-```
-
-## Custom Icons
-
-### SVG Strings
-
-```javascript
-SeoToast.success('Complete!', {
-  customIcon: `<svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-  </svg>`
-});
-```
-
-### Image URLs
-
-```javascript
-SeoToast.error('Network error', {
-  customIcon: 'https://example.com/icons/network-error.svg'
-});
-
-// Relative paths
-SeoToast.warning('Check input', {
-  customIcon: './assets/warning-icon.png'
-});
-```
-
-### Icon Requirements
-
-- **SVG**: Must include `viewBox` attribute
-- **Images**: Recommended size 24x24px or 32x32px
-- **Format**: SVG, PNG, JPG, WebP supported
-- **Color**: Use `fill="currentColor"` for theme-aware SVGs
-
 ## Framework Integration
 
 ### React
 
-```jsx
-import { useEffect } from 'react';
-import 'seo-toast';
+```bash
+npm install seo-toast
+```
+
+```tsx
+import { useRef } from 'react';
+import { SeoToast, type SeoToastRef } from 'seo-toast/react';
 
 function App() {
-  useEffect(() => {
-    // Listen for events
-    const handleToastClose = (event) => {
-      console.log('Toast closed:', event.attach);
-    };
-    
-    document.addEventListener('toast-close', handleToastClose);
-    
-    return () => {
-      document.removeEventListener('toast-close', handleToastClose);
-    };
-  }, []);
+  const toastRef = useRef<SeoToastRef>(null);
 
-  const showSuccess = () => {
-    SeoToast.success('React integration works!');
+  const handleSuccess = () => {
+    toastRef.current?.success('React toast works!');
   };
 
   return (
     <div>
-      <button onClick={showSuccess}>Show Toast</button>
-      <seo-toast position="top-center" />
+      <button onClick={handleSuccess}>Show Toast</button>
+      <SeoToast
+        ref={toastRef}
+        position="top-right"
+        enterAnimation="bounce"
+        onClose={(e) => console.log('Closed:', e.detail)}
+      />
     </div>
   );
-}
-
-// TypeScript declarations
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'seo-toast': any;
-    }
-  }
 }
 ```
 
@@ -373,100 +149,110 @@ declare global {
 <template>
   <div>
     <button @click="showToast">Show Toast</button>
-    <seo-toast position="bottom-right" />
+    <SeoToast
+      ref="toastRef"
+      position="bottom-right"
+      @close="handleClose"
+    />
   </div>
 </template>
 
-<script setup>
-import { onMounted, onUnmounted } from 'vue';
-import 'seo-toast';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { SeoToast } from 'seo-toast/vue';
+
+const toastRef = ref();
 
 const showToast = () => {
-  SeoToast.info('Vue integration successful!');
+  toastRef.value?.success('Vue toast works!');
 };
 
-let toastCloseHandler;
-
-onMounted(() => {
-  toastCloseHandler = (event) => {
-    console.log('Toast closed:', event.attach);
-  };
-  document.addEventListener('toast-close', toastCloseHandler);
-});
-
-onUnmounted(() => {
-  if (toastCloseHandler) {
-    document.removeEventListener('toast-close', toastCloseHandler);
-  }
-});
+const handleClose = (detail) => {
+  console.log('Toast closed:', detail);
+};
 </script>
 ```
 
 ### Angular
 
 ```typescript
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import 'seo-toast';
+import { Component, ViewChild } from '@angular/core';
+import { SeoToastComponent } from 'seo-toast/angular';
 
 @Component({
-  selector: 'app-toast-demo',
+  selector: 'app-root',
+  standalone: true,
+  imports: [SeoToastComponent],
   template: `
     <button (click)="showToast()">Show Toast</button>
-    <seo-toast position="top-left"></seo-toast>
-  `,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    <seo-toast-wrapper
+      #toast
+      position="top-center"
+      (close)="onClose($event)"
+    />
+  `
 })
-export class ToastDemoComponent implements OnInit, OnDestroy {
-  private toastCloseHandler?: (event: any) => void;
-
-  ngOnInit() {
-    this.toastCloseHandler = (event: any) => {
-      console.log('Toast closed:', event.attach);
-    };
-    document.addEventListener('toast-close', this.toastCloseHandler);
-  }
-
-  ngOnDestroy() {
-    if (this.toastCloseHandler) {
-      document.removeEventListener('toast-close', this.toastCloseHandler);
-    }
-  }
+export class AppComponent {
+  @ViewChild('toast') toast!: SeoToastComponent;
 
   showToast() {
-    SeoToast.warning('Angular integration ready!');
+    this.toast.success('Angular toast works!');
+  }
+
+  onClose(detail: any) {
+    console.log('Toast closed:', detail);
   }
 }
 ```
 
-### Svelte
+### Solid
 
-```svelte
-<script>
-  import { onMount, onDestroy } from 'svelte';
-  import 'seo-toast';
-  
-  let toastCloseHandler;
-  
-  onMount(() => {
-    toastCloseHandler = (event) => {
-      console.log('Toast closed:', event.attach);
-    };
-    document.addEventListener('toast-close', toastCloseHandler);
-  });
-  
-  onDestroy(() => {
-    if (toastCloseHandler) {
-      document.removeEventListener('toast-close', toastCloseHandler);
-    }
-  });
-  
-  const showToast = () => {
-    SeoToast.error('Svelte integration complete!');
-  };
-</script>
+```tsx
+import { SeoToast, createToastHelpers, type SeoToastElement } from 'seo-toast/solid';
 
-<button on:click={showToast}>Show Toast</button>
-<seo-toast position="bottom-center" />
+function App() {
+  let toastRef: SeoToastElement | undefined;
+
+  const toast = () => createToastHelpers(toastRef);
+
+  return (
+    <div>
+      <button onClick={() => toast().success('Solid toast works!')}>
+        Show Toast
+      </button>
+      <SeoToast
+        ref={(el) => (toastRef = el)}
+        position="top-right"
+        onClose={(detail) => console.log('Closed:', detail)}
+      />
+    </div>
+  );
+}
+```
+
+### Qwik
+
+```tsx
+import { component$, useSignal } from '@builder.io/qwik';
+import { SeoToast, useToastHelpers, type SeoToastElement } from 'seo-toast/qwik';
+
+export default component$(() => {
+  const toastRef = useSignal<SeoToastElement>();
+  const toast = useToastHelpers(toastRef);
+
+  return (
+    <div>
+      <button onClick$={() => toast.success('Qwik toast works!')}>
+        Show Toast
+      </button>
+      <SeoToast
+        ref={toastRef}
+        position="bottom-center"
+        onClose$={(detail) => console.log('Closed:', detail)}
+      />
+    </div>
+  );
+});
 ```
 
 ### Vanilla JavaScript
@@ -475,99 +261,215 @@ export class ToastDemoComponent implements OnInit, OnDestroy {
 <!DOCTYPE html>
 <html>
 <head>
-  <script type="module" src="https://unpkg.com/seo-toast/dist/seo-toast.min.js"></script>
+  <script type="module">
+    import 'seo-toast';
+  </script>
 </head>
 <body>
   <button id="toast-btn">Show Toast</button>
-  <seo-toast id="toast-container"></seo-toast>
+  <seo-toast position="top-right"></seo-toast>
 
   <script>
     document.getElementById('toast-btn').addEventListener('click', () => {
-      SeoToast.success('Vanilla JS works perfectly!');
+      SeoToast.success('Vanilla JS works!');
     });
 
     // Event handling
     document.addEventListener('toast-close', (event) => {
-      const { message, type, count } = event.attach;
-      console.log(`Toast "${message}" closed (shown ${count} times)`);
+      console.log('Toast closed:', event.detail);
     });
   </script>
 </body>
 </html>
 ```
 
-## 📱 Responsive Design
+## Configuration
+
+### Component Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `close-time` | number | 3000 | Auto-close duration in milliseconds |
+| `position` | string | 'top-right' | Toast display position |
+| `enter-animation` | string | 'slide' | Animation when toast appears |
+| `exit-animation` | string | 'slide' | Animation when toast disappears |
+
+### Position Options
+
+- `top-left`, `top-center`, `top-right`
+- `bottom-left`, `bottom-center`, `bottom-right`
+
+### Animation Options
+
+- `slide` - Slides in from the side (default)
+- `fade` - Fades in/out with opacity
+- `scale` - Scales up/down from center
+- `bounce` - Bouncy entrance effect
+- `flip` - 3D flip animation
+
+### TypeScript Interfaces
+
+```typescript
+interface ToastOptions {
+  title?: string;           // Custom title text
+  customIcon?: string;      // SVG string or image URL
+  closeTime?: number;       // Override default close time
+  showTitle?: boolean;      // Show/hide title (default: true)
+  showProgress?: boolean;   // Show/hide progress bar (default: true)
+}
+
+interface ToastConfig {
+  position?: ToastPosition;
+  enterAnimation?: AnimationType;
+  exitAnimation?: AnimationType;
+}
+
+type ToastType = 'success' | 'error' | 'warning' | 'info';
+type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+type AnimationType = 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
+```
+
+## API Reference
+
+### Static Methods
+
+```javascript
+SeoToast.show(message, type?, options?)
+SeoToast.success(message, options?)
+SeoToast.error(message, options?)
+SeoToast.warning(message, options?)
+SeoToast.info(message, options?)
+SeoToast.getInstance(config?)
+```
+
+### Instance Methods
+
+```javascript
+const toast = SeoToast.getInstance();
+
+toast.showToast(message, type?, options?)
+toast.closeTime = 3000;
+toast.position = 'bottom-center';
+toast.enterAnimation = 'bounce';
+toast.exitAnimation = 'scale';
+```
+
+### Events
+
+```javascript
+// Listen for toast close events
+document.addEventListener('toast-close', (event) => {
+  const { message, type, count, title, reason } = event.detail;
+  console.log('Toast closed:', { message, type, reason });
+});
+
+// Event detail interface
+interface ToastCloseEventDetail {
+  message: string;
+  type: ToastType;
+  count: number;
+  title?: string;
+  reason: 'timeout' | 'click' | 'manual';
+}
+```
+
+## Styling & Customization
+
+### CSS Variables
 
 ```css
-/* Mobile optimizations */
+seo-toast {
+  /* Container positioning */
+  --toast-container-top: 1rem;
+  --toast-container-right: 1rem;
+  --toast-container-z-index: 200000;
+
+  /* Toast layout */
+  --toast-gap: 1rem;
+  --toast-padding: 0.5rem 0.5rem 1rem 0.5rem;
+  --toast-border-radius: 0.5rem;
+  --toast-min-width: 20rem;
+  --toast-max-width: 20rem;
+  --toast-box-shadow: 0 2px 2px rgba(0,0,0,.1);
+
+  /* Type-specific backgrounds */
+  --toast-success-bg: #dcfce7;
+  --toast-error-bg: #fee2e2;
+  --toast-warning-bg: #fef3c7;
+  --toast-info-bg: #dbeafe;
+
+  /* Animation timing */
+  --toast-enter-duration: 0.3s;
+  --toast-exit-duration: 0.2s;
+}
+```
+
+### Custom Themes
+
+```css
+/* Dark theme */
+seo-toast.dark-theme {
+  --toast-success-bg: #064e3b;
+  --toast-error-bg: #7f1d1d;
+  --toast-warning-bg: #78350f;
+  --toast-info-bg: #1e3a8a;
+  --toast-box-shadow: 0 4px 8px rgba(0,0,0,.3);
+  color: white;
+}
+```
+
+### Responsive Design
+
+```css
 @media (max-width: 768px) {
   seo-toast {
     --toast-min-width: calc(100vw - 2rem);
     --toast-max-width: calc(100vw - 2rem);
-    --toast-container-right: 1rem;
-    --toast-container-top: 1rem;
-  }
-}
-
-/* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1024px) {
-  seo-toast {
-    --toast-min-width: 22rem;
-    --toast-max-width: 22rem;
-  }
-}
-
-/* Large desktop */
-@media (min-width: 1440px) {
-  seo-toast {
-    --toast-container-right: 2rem;
-    --toast-container-top: 2rem;
   }
 }
 ```
 
-## ♿ Accessibility Features
-
-- **ARIA Labels**: All interactive elements have proper labels
-- **Keyboard Navigation**: Close button is keyboard accessible
-- **Screen Reader Support**: Toast messages are announced
-- **High Contrast**: Customizable colors for accessibility
-- **Reduced Motion**: Respects `prefers-reduced-motion` setting
+### Reduced Motion
 
 ```css
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   seo-toast {
     --toast-enter-duration: 0.1s;
     --toast-exit-duration: 0.1s;
-    --toast-enter-transform: none;
-    --toast-exit-transform: none;
   }
 }
 ```
 
-## Migration Guide
-
-### From Other Toast Libraries
+## Custom Icons
 
 ```javascript
-// Before: react-toastify
-import { toast } from 'react-toastify';
-toast.success('Success!');
+// SVG string
+SeoToast.success('Complete!', {
+  customIcon: `<svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+  </svg>`
+});
 
-// After: seo-toast
-import 'seo-toast';
-SeoToast.success('Success!');
+// Image URL
+SeoToast.error('Network error', {
+  customIcon: 'https://example.com/icons/error.svg'
+});
 ```
 
-```javascript
-// Before: vue-toastification
-this.$toast.success('Success!');
+## Browser Support
 
-// After: seo-toast
-SeoToast.success('Success!');
-```
+- Chrome 67+
+- Firefox 63+
+- Safari 10.1+
+- Edge 79+
 
 ## License
 
 MIT License - see [LICENSE](https://github.com/seadonggyun4/seo-toast/blob/main/LICENSE) file for details.
+
+## Links
+
+- [GitHub Repository](https://github.com/seadonggyun4/seo-toast)
+- [NPM Package](https://www.npmjs.com/package/seo-toast)
+- [Live Demo](https://seo-toast.netlify.app/)
+- [Issues](https://github.com/seadonggyun4/seo-toast/issues)
