@@ -290,6 +290,7 @@ import 'seo-toast/styles';</code></pre>
               </div>
               <div class="example-content">
                 <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
+import 'seo-toast/styles';
 
 // Show different types of toasts
 SeoToast.success('Operation completed successfully!');
@@ -309,6 +310,7 @@ SeoToast.info('New feature available');</code></pre>
               </div>
               <div class="example-content">
                 <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
+import 'seo-toast/styles';
 
 // Configure toast instance
 const toast = SeoToast.getInstance({
@@ -331,6 +333,7 @@ toast.showToast('Configured toast!', 'success');</code></pre>
               </div>
               <div class="example-content">
                 <pre><code class="language-javascript">import { SeoToast } from 'seo-toast';
+import 'seo-toast/styles';
 
 SeoToast.success('Data saved!', {
   title: 'Success',
@@ -376,6 +379,7 @@ document.addEventListener('toast-close', (event) => {
               <div class="example-content">
                 <pre><code class="language-tsx">import { useRef } from 'react';
 import { SeoToast, type SeoToastRef } from 'seo-toast/react';
+import 'seo-toast/styles';
 
 function App() {
   const toastRef = useRef&lt;SeoToastRef&gt;(null);
@@ -422,6 +426,7 @@ function App() {
 &lt;script setup lang="ts"&gt;
 import { ref } from 'vue';
 import { SeoToast } from 'seo-toast/vue';
+import 'seo-toast/styles';
 
 const toastRef = ref();
 
@@ -447,6 +452,7 @@ const handleClose = (detail) => {
               <div class="example-content">
                 <pre><code class="language-typescript">import { Component, ViewChild } from '@angular/core';
 import { SeoToastComponent } from 'seo-toast/angular';
+import 'seo-toast/styles';
 
 @Component({
   selector: 'app-root',
@@ -485,6 +491,7 @@ export class AppComponent {
               </div>
               <div class="example-content">
                 <pre><code class="language-tsx">import { SeoToast, createToastHelpers, type SeoToastElement } from 'seo-toast/solid';
+import 'seo-toast/styles';
 
 function App() {
   let toastRef: SeoToastElement | undefined;
@@ -518,6 +525,7 @@ function App() {
               <div class="example-content">
                 <pre><code class="language-tsx">import { component$, useSignal } from '@builder.io/qwik';
 import { SeoToast, useToastHelpers, type SeoToastElement } from 'seo-toast/qwik';
+import 'seo-toast/styles';
 
 export default component$(() => {
   const toastRef = useSignal&lt;SeoToastElement&gt;();
@@ -578,6 +586,7 @@ export default component$(() => {
 &lt;head&gt;
   &lt;script type="module"&gt;
     import 'seo-toast';
+    import 'seo-toast/styles';
   &lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;

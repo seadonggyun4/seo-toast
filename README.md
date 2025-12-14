@@ -38,8 +38,9 @@ npm install seo-toast
 ### Basic Import
 
 ```javascript
-// Import component (auto-registers <seo-toast> element)
+// Import component and styles
 import 'seo-toast';
+import 'seo-toast/styles';
 
 // Use static methods
 SeoToast.success('Operation completed!');
@@ -78,6 +79,7 @@ import 'seo-toast/styles';
 <head>
   <script type="module">
     import 'seo-toast';
+    import 'seo-toast/styles';
   </script>
 </head>
 <body>
@@ -92,6 +94,7 @@ import 'seo-toast/styles';
 
 ```javascript
 import { SeoToast } from 'seo-toast';
+import 'seo-toast/styles';
 
 // Custom configuration
 SeoToast.success('Data saved!', {
@@ -125,6 +128,7 @@ npm install seo-toast
 ```tsx
 import { useRef } from 'react';
 import { SeoToast, type SeoToastRef } from 'seo-toast/react';
+import 'seo-toast/styles';
 
 function App() {
   const toastRef = useRef<SeoToastRef>(null);
@@ -164,6 +168,7 @@ function App() {
 <script setup lang="ts">
 import { ref } from 'vue';
 import { SeoToast } from 'seo-toast/vue';
+import 'seo-toast/styles';
 
 const toastRef = ref();
 
@@ -182,6 +187,7 @@ const handleClose = (detail) => {
 ```typescript
 import { Component, ViewChild } from '@angular/core';
 import { SeoToastComponent } from 'seo-toast/angular';
+import 'seo-toast/styles';
 
 @Component({
   selector: 'app-root',
@@ -213,6 +219,7 @@ export class AppComponent {
 
 ```tsx
 import { SeoToast, createToastHelpers, type SeoToastElement } from 'seo-toast/solid';
+import 'seo-toast/styles';
 
 function App() {
   let toastRef: SeoToastElement | undefined;
@@ -239,6 +246,7 @@ function App() {
 ```tsx
 import { component$, useSignal } from '@builder.io/qwik';
 import { SeoToast, useToastHelpers, type SeoToastElement } from 'seo-toast/qwik';
+import 'seo-toast/styles';
 
 export default component$(() => {
   const toastRef = useSignal<SeoToastElement>();
@@ -267,6 +275,7 @@ export default component$(() => {
 <head>
   <script type="module">
     import 'seo-toast';
+    import 'seo-toast/styles';
   </script>
 </head>
 <body>
