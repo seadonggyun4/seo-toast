@@ -13,6 +13,17 @@
   <link rel="stylesheet" href="/style.scss">
 </head>
 <body>
+  <!-- Page Loader (placed first for immediate visibility) -->
+  <div class="page-loder show">
+    <div class="loader-content">
+      <h2>
+        <img src="/logo_header.png" alt="SEO Toast Logo" />
+      </h2>
+      <div class="loader-text">Loading...</div>
+      <div class="loader-progress"></div>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="header">
     <div class="container">
@@ -69,6 +80,11 @@
           <i class="fab fa-js"></i>
           <span>Vanilla JS</span>
         </div>
+      </div>
+
+      <!-- Interactive Toaster SVG -->
+      <div class="toaster-canvas-wrapper">
+        <div id="toaster-canvas"></div>
       </div>
 
       <!-- Quick Demo -->

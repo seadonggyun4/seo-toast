@@ -7,9 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
 node_modules
+
+# Build outputs
 dist
 dist-ssr
+output
+min
+
+# Environment and local files
 *.local
 
 # Editor directories and files
@@ -22,3 +29,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Archive files (release artifacts)
+*.zip
+*.tar.gz
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Package manager lock files
+package-lock.json
+
+# guideline
+.github
+CLAUDE.md
+FRAMEWORK_COMPATIBILITY_GUIDE.md
