@@ -53,6 +53,11 @@ $toast-desc-line-height: 1.4 !default;
 $toast-count-font-size: 0.9rem !default;
 $toast-count-font-weight: 500 !default;
 
+// 텍스트 컬러 (외부 CSS 영향 방지)
+$toast-title-color: #1f2937 !default;
+$toast-desc-color: #374151 !default;
+$toast-bg-color: #ffffff !default;
+
 // 닫기 버튼 관련
 $toast-close-top: 0.75rem !default;
 $toast-close-right: 0.75rem !default;

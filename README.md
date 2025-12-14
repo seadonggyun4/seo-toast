@@ -405,6 +405,13 @@ seo-toast {
   --toast-max-width: 20rem;
   --toast-box-shadow: 0 2px 2px rgba(0,0,0,.1);
 
+  /* Text colors (prevents external CSS interference) */
+  --toast-bg-color: #ffffff;
+  --toast-title-color: #1f2937;
+  --toast-desc-color: #374151;
+  --toast-close-color: #6b7280;
+  --toast-close-hover-color: #1f2937;
+
   /* Type-specific backgrounds */
   --toast-success-bg: #dcfce7;
   --toast-error-bg: #fee2e2;
@@ -422,12 +429,16 @@ seo-toast {
 ```css
 /* Dark theme */
 seo-toast.dark-theme {
+  --toast-bg-color: #1f2937;
+  --toast-title-color: #f9fafb;
+  --toast-desc-color: #e5e7eb;
+  --toast-close-color: #9ca3af;
+  --toast-close-hover-color: #f9fafb;
   --toast-success-bg: #064e3b;
   --toast-error-bg: #7f1d1d;
   --toast-warning-bg: #78350f;
   --toast-info-bg: #1e3a8a;
   --toast-box-shadow: 0 4px 8px rgba(0,0,0,.3);
-  color: white;
 }
 ```
 
