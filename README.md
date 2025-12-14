@@ -1,9 +1,13 @@
 # SeoToast
 
+<img width="300" height="300" alt="logo" src="https://github.com/user-attachments/assets/e567ea31-d046-45b3-80d1-9a1e32c7e002" />
+
 A lightweight and versatile toast notification component built as a native Web Component. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.
 
 [![NPM](https://img.shields.io/npm/dt/seo-toast.svg?label=NPM)](https://www.npmjs.com/package/seo-toast)
 [![GitHub stars](https://img.shields.io/github/stars/seadonggyun4/seo-toast.svg)](https://github.com/seadonggyun4/seo-toast/stargazers)
+
+> 🌟 Support with a `GitHub star` — your encouragement means the world to me!
 
 **[Live Demo](https://seo-toast.netlify.app/)** | **[NPM Package](https://www.npmjs.com/package/seo-toast)**
 
