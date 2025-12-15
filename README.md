@@ -1,3 +1,4 @@
+
 # SeoToast
 
 <img width="300" height="300" alt="logo" src="https://github.com/user-attachments/assets/e567ea31-d046-45b3-80d1-9a1e32c7e002" />
@@ -9,115 +10,271 @@ A lightweight and versatile toast notification component built as a native Web C
 
 > 🌟 Support with a `GitHub star` — your encouragement means the world to me!
 
-**[Live Demo](https://seo-toast.netlify.app/)** | **[NPM Package](https://www.npmjs.com/package/seo-toast)**
+- **[GitHub](https://github.com/seadonggyun4/seo-toast)**
+- **[DemoSite](https://seo-toast.netlify.app/)**
+
+---
 
 ## Features
 
-- **4 Toast Types**: success, error, warning, info with built-in icons
-- **6 Positioning Options**: top/bottom left, right, and center
-- **5 Animation Types**: slide, fade, scale, bounce, flip for enter/exit
-- **Progress Indicator**: Visual countdown with pause on hover
-- **Duplicate Handling**: Smart grouping of identical messages with counters
-- **Customizable Styling**: SCSS variables for complete visual control
-- **Responsive Design**: Works on desktop and mobile devices
-- **Accessibility**: ARIA labels and keyboard navigation support
-- **Custom Icons**: SVG strings or image URLs
-- **Zero Dependencies**: Pure Web Components, no external libraries
-- **SSR Compatible**: Safe for server-side rendering environments
-- **Framework Wrappers**: Native support for React, Vue, Angular, Solid, Qwik
-- **Lightweight**: ~10KB gzipped
+- ✅ **4 Toast Types**: success, error, warning, info (with built-in icons)
+- 📍 **6 Positions**: top/bottom left, center, right
+- 🎬 **5 Animations**: slide, fade, scale, bounce, flip
+- ⏳ **Progress Bar**: Visual countdown, pause on hover
+- 🔁 **Duplicate Grouping**: Identical messages are grouped with counters
+- 🎨 **Customizable**: SCSS variables for full theming
+- ♿ **Accessibility**: ARIA, keyboard navigation
+- 🖼️ **Custom Icons**: SVG string or image URL
+- 🧩 **Framework Wrappers**: React, Vue, Angular, Solid, Qwik
+- ⚡ **SSR Safe**: Works in server-side rendering environments
+- 💡 **Zero Dependencies**: Pure Web Components, no external libraries
+- 📦 **Lightweight**: ~10KB gzipped
+
+---
 
 ## Installation
+
+### For Modern Bundlers
 
 ```bash
 npm install seo-toast
 ```
 
-## Quick Start
+```js
+import 'seo-toast';
+import 'seo-toast/styles';
+```
 
-### Basic Import
+### For Direct Browser Usage
 
-```javascript
-// Import component and styles
+```html
+<link rel="stylesheet" href="./min/index.css">
+<script type="module" src="./min/index.js"></script>
+```
+
+---
+
+## Component Overview
+
+### `<seo-toast>`
+
+- Native Web Component for toast notifications
+- No Shadow DOM (Light DOM for global theming)
+- All configuration via attributes or JS API
+
+---
+
+## Basic Usage
+
+### HTML
+
+```html
+<seo-toast position="top-right"></seo-toast>
+<button onclick="SeoToast.success('Hello!')">Show Toast</button>
+```
+
+### JavaScript
+
+```js
 import 'seo-toast';
 import 'seo-toast/styles';
 
-// Use static methods
 SeoToast.success('Operation completed!');
 SeoToast.error('Something went wrong!');
 SeoToast.warning('Please check your input');
 SeoToast.info('New feature available');
 ```
 
-### Module Imports
-
-```javascript
-// Main component
-import 'seo-toast';
-
-// Component only
-import 'seo-toast/components/seo-toast';
-
-// Types (TypeScript)
-import type { ToastType, ToastPosition, ToastOptions } from 'seo-toast/types';
-
-// Event helpers
-import { eventHelpers, EVENT_NAMES } from 'seo-toast/event';
-
-// Constants
-import { DEFAULT_CONFIG, DEFAULT_TITLES } from 'seo-toast/constants';
-
-// Styles only
-import 'seo-toast/styles';
-```
-
-### HTML Usage
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <script type="module">
-    import 'seo-toast';
-    import 'seo-toast/styles';
-  </script>
-</head>
-<body>
-  <seo-toast position="top-right"></seo-toast>
-
-  <button onclick="SeoToast.success('Hello!')">Show Toast</button>
-</body>
-</html>
-```
-
 ### Advanced Usage
 
-```javascript
-import { SeoToast } from 'seo-toast';
-import 'seo-toast/styles';
-
-// Custom configuration
-SeoToast.success('Data saved!', {
+```js
+SeoToast.success('Saved!', {
   title: 'Success',
   closeTime: 5000,
   showProgress: true,
   customIcon: 'https://example.com/success.svg'
 });
 
-// Using instance for consistent configuration
 const toast = SeoToast.getInstance({
   position: 'bottom-center',
   enterAnimation: 'bounce',
   exitAnimation: 'fade'
 });
+toast.showToast('Custom message', 'warning', { showTitle: false, closeTime: 3000 });
+```
 
-toast.showToast('Custom message', 'warning', {
-  showTitle: false,
-  closeTime: 3000
+---
+
+## Framework Wrappers
+
+| Framework | Import Path         | Version    |
+|-----------|---------------------|------------|
+| React     | seo-toast/react     | >= 17.0.0  |
+| Vue       | seo-toast/vue       | >= 3.0.0   |
+| Angular   | seo-toast/angular   | >= 14.0.0  |
+| Solid     | seo-toast/solid     | >= 1.0.0   |
+| Qwik      | seo-toast/qwik      | >= 1.0.0   |
+
+> All wrappers are optional peer dependencies.
+
+### React Example
+
+```tsx
+import { SeoToast, type SeoToastRef } from 'seo-toast/react';
+import 'seo-toast/styles';
+
+function App() {
+  const toastRef = useRef<SeoToastRef>(null);
+  return (
+    <>
+      <button onClick={() => toastRef.current?.success('React toast!')}>Show Toast</button>
+      <SeoToast ref={toastRef} position="top-right" />
+    </>
+  );
+}
+```
+
+<!-- Vue, Angular, Solid, Qwik 예제도 seo-select README 참고하여 추가 -->
+
+---
+
+## API Reference
+
+### Static Methods
+
+```js
+SeoToast.show(message, type?, options?)
+SeoToast.success(message, options?)
+SeoToast.error(message, options?)
+SeoToast.warning(message, options?)
+SeoToast.info(message, options?)
+SeoToast.getInstance(config?)
+```
+
+### Instance Methods
+
+```js
+const toast = SeoToast.getInstance();
+toast.showToast(message, type?, options?)
+toast.closeTime = 3000;
+toast.position = 'bottom-center';
+toast.enterAnimation = 'bounce';
+toast.exitAnimation = 'scale';
+```
+
+---
+
+## Events
+
+| Event Name    | Properties                                         | Description                |
+|---------------|----------------------------------------------------|----------------------------|
+| `toast-close` | `{ message, type, count, title, reason }`          | Toast closed (any reason)  |
+
+```js
+document.addEventListener('toast-close', (event) => {
+  const { message, type, count, title, reason } = event.detail;
+  console.log('Toast closed:', { message, type, reason });
 });
 ```
 
-## Framework Integration
+---
+
+## Component Attributes
+
+| Attribute        | Type    | Default      | Description                       |
+|------------------|---------|--------------|-----------------------------------|
+| `close-time`     | number  | 3000         | Auto-close duration (ms)          |
+| `position`       | string  | 'top-right'  | Toast display position            |
+| `enter-animation`| string  | 'slide'      | Animation when toast appears      |
+| `exit-animation` | string  | 'slide'      | Animation when toast disappears   |
+
+### Valid Values
+
+- **Position**: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`
+- **Animation**: `slide`, `fade`, `scale`, `bounce`, `flip`
+- **Type**: `success`, `error`, `warning`, `info`
+
+---
+
+## TypeScript Support
+
+```ts
+import type { ToastType, ToastPosition, ToastOptions } from 'seo-toast/types';
+```
+
+---
+
+## Styling & Customization
+
+### CSS Variables
+
+```css
+seo-toast {
+  --toast-container-top: 1rem;
+  --toast-container-right: 1rem;
+  --toast-bg-color: #fff;
+  --toast-title-color: #1f2937;
+  --toast-success-bg: #dcfce7;
+  /* ...etc (see style.scss) */
+}
+```
+
+### Dark Theme
+
+```css
+seo-toast.dark-theme {
+  --toast-bg-color: #1f2937;
+  --toast-title-color: #f9fafb;
+  /* ... */
+}
+```
+
+### Responsive & Reduced Motion
+
+```css
+@media (max-width: 768px) { /* ... */ }
+@media (prefers-reduced-motion: reduce) { /* ... */ }
+```
+
+---
+
+## Custom Icons
+
+```js
+SeoToast.success('Complete!', {
+  customIcon: `<svg>...</svg>`
+});
+SeoToast.error('Network error', {
+  customIcon: 'https://example.com/icons/error.svg'
+});
+```
+
+---
+
+## Developer Workflows
+
+- **Build**: `npm run build` (production), `npm run build:min` (standalone)
+- **Dev Server**: `npm run dev`
+- **Type Check**: `npm run type-check`
+- **Release**: `npm run release:patch|minor|major`
+- **Demo**: `demo/` folder, run with dev server
+
+---
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## Links
+
+- [GitHub Repository](https://github.com/seadonggyun4/seo-toast)
+- [NPM Package](https://www.npmjs.com/package/seo-toast)
+- [Live Demo](https://seo-toast.netlify.app/)
+- [Issues](https://github.com/seadonggyun4/seo-toast/issues)
+
+---
 
 ### React
 
