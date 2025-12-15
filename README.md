@@ -32,6 +32,32 @@ A lightweight and versatile toast notification component built as a native Web C
 
 ---
 
+## Why SeoToast?
+
+SeoToast is a pure Web Component that works independently of any framework, supporting React, Vue, Angular, Solid, and Qwik out of the box. Below is a feature comparison with other popular toast libraries:
+
+| Feature            | SeoToast                       | react-toastify | sonner  | notistack |
+| ------------------ | ------------------------------ | -------------- | ------- | --------- |
+| Framework Agnostic | ✅ Web Component                | ❌ React        | ❌ React | ❌ React   |
+| Bundle Size        | ✅ ~10KB                        | ❌ Large        | △       | △         |
+| Dependencies       | ✅ Zero                         | ❌ React Only   | ❌       | ❌         |
+| Position Options   | ✅ 6 positions                  | △ Limited      | △       | △         |
+| Animations         | ✅ 5 types                      | △ Basic        | △       | ❌         |
+| Duplicate Grouping | ✅ Built-in                     | ❌ None         | ❌ None  | ❌         |
+| Progress Bar       | ✅ Hover pause                  | △              | ❌       | ❌         |
+| Accessibility      | ✅ ARIA + Keyboard              | △              | △       | △         |
+| SSR Support        | ✅ Safe                         | ❌ Issues       | △       | △         |
+| Custom Icons       | ✅ SVG/URL                      | △              | △       | △         |
+| Multi-Framework    | ✅ React/Vue/Angular/Qwik/Solid | ❌              | ❌       | ❌         |
+
+---
+
+### Why choose SeoToast?
+
+SeoToast is a truly framework-agnostic Web Component that is SSR-safe, lightweight, and highly extensible. It offers all the practical features you need—duplicate message grouping, custom icons, flexible positions and animations, accessibility, and more. Official wrappers for React, Vue, Angular, Solid, and Qwik make integration seamless in any project.
+
+---
+
 ## Installation
 
 ### For Modern Bundlers
