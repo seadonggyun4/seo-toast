@@ -1,7 +1,7 @@
 
 # SeoToast
 
-<img width="300" height="300" alt="logo" src="https://github.com/user-attachments/assets/e567ea31-d046-45b3-80d1-9a1e32c7e002" />
+<img width="300" height="300" alt="logo" src="https://github.com/user-attachments/assets/8ea33832-77b7-43d6-acdb-b622b20ea17b" />
 
 A lightweight and versatile toast notification component built as a native Web Component. Works seamlessly across all frameworks and vanilla JavaScript with zero dependencies.
 
