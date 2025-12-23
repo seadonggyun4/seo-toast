@@ -1,6 +1,6 @@
 {
   "name": "seo-toast",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "SEO-optimized, lightweight toast notification Web Component. Framework-agnostic, SSR-safe, accessible, and fully customizable. Works with React, Vue, Angular, Solid, Qwik, and vanilla JS. No dependencies.",
   "type": "module",
   "main": "./dist/index.js",
